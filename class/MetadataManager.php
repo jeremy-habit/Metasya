@@ -55,14 +55,13 @@ class MetadataManager
   {
     if (is_object($obj)) $obj = (array)$obj;
     if (is_array($obj)) {
-      $new = array();
-      foreach ($obj as $key => $val) {
-        $new[$key] = $this->convert_Object_To_Array($val);
+      $newArray = [];
+      foreach ($obj as $key => $value) {
+        $newArray[$key] = $this->convert_Object_To_Array($value);
       }
-    } else $new = $obj;
-    return $new;
+    } else $newArray = $obj;
+    return $newArray;
   }
-
 
   /**
    * Prepare and return a string (targeting metadata) in order to add it in a exiftool command.
