@@ -10,10 +10,6 @@ class MetadataManager
    * @var
    */
   private $filePath;
-  /**
-   * @var
-   */
-  private $metadata;
 
   /**
    * MetadataManager constructor.
@@ -21,182 +17,127 @@ class MetadataManager
    */
   public function __construct($filePath)
   {
-    $this->setFilePath($filePath);
+    $this->filePath = $filePath;
   }
 
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-  /* PRIVATE FUNCTIONS */
+  /* ### PRIVATE FUNCTIONS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
+
   /**
-   * Initialize metadata as array from $filePath via exiftool.
+   * Return the result of a exiftool read command with some options.
+   * @param string $stringifiedTargetedMetadata
+   * @param string $stringifiedExcludedMetadata
+   * @param null $groupOption
+   * @return array|null|string
    */
-  private function read()
+  private function execute_Read($stringifiedTargetedMetadata = "-all", $stringifiedExcludedMetadata = "", $groupOption = null)
   {
-    if (file_exists($this->filePath)) {
-      $this->metadata = (array)json_decode(shell_exec("exiftool -json -G" . $this->filePath))[0];
-    } else {
-      $this->metadata = null;
+    try {
+      if (file_exists($this->filePath)) {
+        $cmdResult = json_decode(shell_exec("exiftool -j " . $stringifiedTargetedMetadata . " " . $stringifiedExcludedMetadata . " " . $groupOption . " " . $this->filePath))[0];
+        return ($cmdResult == null) ? null : $this->convert_Object_To_Array($cmdResult);
+      }
+      return "Error : the file \" " . $this->filePath . " \" not found !";
+    } catch (Exception $exception) {
+      return $exception->getMessage();
     }
   }
 
   /**
-   * Return the value of a metadata if this last one exists
-   * @param $metadataTag
-   * @return null
+   * Convert any object to array recursively.
+   * @param $obj
+   * @return array
    */
-  private function getOne($metadataTag)
+  private function convert_Object_To_Array($obj)
   {
-    if ($this->exists($metadataTag)) {
-      return $this->metadata[$metadataTag];
-    }
-    return null;
+    if (is_object($obj)) $obj = (array)$obj;
+    if (is_array($obj)) {
+      $new = array();
+      foreach ($obj as $key => $val) {
+        $new[$key] = $this->convert_Object_To_Array($val);
+      }
+    } else $new = $obj;
+    return $new;
   }
 
 
   /**
-   * Remove one metadata according to its tag name if this last one exists
-   * @param $metadataTag
-   * @return bool
+   * Prepare and return a string (targeting metadata) in order to add it in a exiftool command.
+   * @param string $targetedMetadata
+   * @param bool $exclusion
+   * @return string
    */
-  private function removeOne($metadataTag)
+  private function stringify_Targeted_Metadata($targetedMetadata = "all", $exclusion = false)
   {
-    if ($this->exists($metadataTag)) {
-      unset($this->metadata[$metadataTag]);
-      return true;
+    $stringifiedTargetedMetadata = "";
+    $prefix = "-";
+    if ($exclusion) {
+      $prefix = "--";
     }
-    return false;
-  }
-
-  /**
-   * Edit one metadata if this last one exists
-   * @param $metadataTag
-   * @param $newMetadataValue
-   * @return bool
-   */
-  private function editOne($metadataTag, $newMetadataValue)
-  {
-    if ($this->exists($metadataTag)) {
-      $this->metadata[$metadataTag] = $newMetadataValue;
-      return true;
-    }
-    return false;
-  }
-
-
-  /**
-   * Add one metadata. If this last one exists, its value is replaced by default. $replace = true
-   * @param $newMetadataTag
-   * @param $newMetadataValue
-   * @param bool $replace
-   */
-  private function addOne($newMetadataTag, $newMetadataValue, $replace = true)
-  {
-    if ($replace || (!$replace && !$this->exists($newMetadataTag))) {
-      $this->metadata[$newMetadataTag] = $newMetadataValue;
-    }
-  }
-
-  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-  /* PUBLIC FUNCTIONS */
-  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-
-  /**
-   * Edit one or several metadata inside the array $metadata
-   * @param $targetedMetadata
-   */
-
-  public function edit($targetedMetadata)
-  {
-    foreach ($targetedMetadata as $metadataTag => $newMetadataValue) {
-      $this->editOne($metadataTag, $newMetadataValue);
-    }
-  }
-
-  /**
-   * Remove one or several metadata inside the array $metadata
-   * @param $targetedMetadata
-   */
-  public function remove($targetedMetadata)
-  {
     if (is_array($targetedMetadata)) {
+      $targetedMetadataLength = count($targetedMetadata);
+      $i = 0;
       foreach ($targetedMetadata as $metadataTag) {
-        $this->removeOne($metadataTag);
+        $stringifiedTargetedMetadata .= $prefix . $metadataTag;
+        if ($i++ !== $targetedMetadataLength) {
+          $stringifiedTargetedMetadata .= " ";
+        }
       }
     } else {
-      $this->removeOne($targetedMetadata);
-    }
-  }
-
-  /**
-   * Add one or several metadata inside the array $metadata.
-   * @param $newMetadata
-   * @param bool $replace
-   */
-  public function add($newMetadata, $replace = true)
-  {
-    foreach ($newMetadata as $newMetadataTag => $newMetadataValue) {
-      $this->addOne($newMetadataTag, $newMetadataValue, $replace);
-    }
-  }
-
-  /**
-   * @param $targetedMetadata
-   * @return array|null
-   */
-  public function get($targetedMetadata)
-  {
-    if (is_array($targetedMetadata)) {
-      $lstMetadata = [];
-      foreach ($targetedMetadata as $metadataTag) {
-        $metadataValue = $this->getOne($metadataTag);
-        array_push($lstMetadata, $metadataValue);
+      $targetedMetadata = trim($targetedMetadata);
+      if (!empty($targetedMetadata)) {
+        $stringifiedTargetedMetadata = $prefix . $targetedMetadata;
       }
-      return $lstMetadata;
     }
-    return $this->getOne($targetedMetadata);
-  }
-
-  public function reset()
-  {
-    if (file_exists($this->filePath)) {
-      shell_exec("exiftool -all= " . $this->filePath);
-      $this->read();
-    }
-  }
-
-  /**
-   * Test if a matadata exists or not. Return true of false
-   * @param $metadataTag
-   * @return bool
-   */
-  public function exists($metadataTag)
-  {
-    return !empty($metadataTag) && array_key_exists($metadataTag, $this->metadata);
+    return $stringifiedTargetedMetadata;
   }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-  /* GETTERS & SETTERS */
+  /* ### PUBLIC FUNCTIONS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
   /**
-   * @return mixed
+   * Return metadata as array without group option.
+   * @param string $selectedMetadata
+   * @param string $excludedMetadata
+   * @return array|null|string
    */
-  public function getMetadata()
+  public function read($selectedMetadata = "all", $excludedMetadata = "")
   {
-    return $this->metadata;
+    return $this->execute_Read($this->stringify_Targeted_Metadata($selectedMetadata), $this->stringify_Targeted_Metadata($excludedMetadata, true));
   }
 
   /**
-   * @param mixed $metadata
+   * Return metadata as array with the group option "-G[$num...] : Print group name for each tag.
+   * @param int $num
+   * @param string $selectedMetadata
+   * @param string $excludedMetadata
+   * @return array|null|string
    */
-  public function setMetadata($metadata)
+  public function readWithPrefix($num = 0, $selectedMetadata = "all", $excludedMetadata = "")
   {
-    if (is_array($metadata)) {
-      $this->metadata = $metadata;
-    }
+    return $this->execute_Read($this->stringify_Targeted_Metadata($selectedMetadata), $this->stringify_Targeted_Metadata($excludedMetadata, true), "-G" . $num);
   }
+
+
+  /**
+   * Return metadata as array with the group option "-g[$num...] : Organize output by tag group.
+   * @param int $num
+   * @param string $selectedMetadata
+   * @param string $excludedMetadata
+   * @return array|null|string
+   */
+  public function readByGroup($num = 0, $selectedMetadata = "all", $excludedMetadata = "")
+  {
+    return $this->execute_Read($this->stringify_Targeted_Metadata($selectedMetadata), $this->stringify_Targeted_Metadata($excludedMetadata, true), "-g" . $num);
+  }
+
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+  /* ### GETTERS & SETTERS ### */
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
   /**
    * @return mixed
@@ -212,7 +153,6 @@ class MetadataManager
   public function setFilePath($filePath)
   {
     $this->filePath = $filePath;
-    $this->read();
   }
 
 
