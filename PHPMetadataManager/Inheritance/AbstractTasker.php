@@ -2,6 +2,7 @@
 
 namespace PHPMetadataManager\Inheritance;
 
+use Exception;
 use PHPMetadataManager\InterfaceRepository\TaskerInterface;
 
 /**
@@ -11,7 +12,7 @@ use PHPMetadataManager\InterfaceRepository\TaskerInterface;
 abstract class AbstractTasker implements TaskerInterface
 {
   /**
-   * @var
+   * @var string $filePath
    */
   protected $filePath;
 
@@ -22,6 +23,74 @@ abstract class AbstractTasker implements TaskerInterface
   public function __construct($filePath)
   {
     $this->filePath = $filePath;
+  }
+
+  /**
+   * Replace the multiple whitespaces by one whitespace.
+   * @param $stringifiedCmd
+   * @return mixed
+   */
+  private function trim_Multiple_Whitespaces($stringifiedCmd)
+  {
+    return trim(preg_replace("/ {2,}/", " ", $stringifiedCmd));
+  }
+
+
+  /**
+   * Check if a string is json or not (true or false)
+   * @param $string
+   * @return bool
+   */
+  protected function isJson($string)
+  {
+    json_decode($string);
+    return (json_last_error() == JSON_ERROR_NONE);
+  }
+
+  /**
+   * Return json file content as array
+   * @param $jsonFilePath
+   * @return null|array
+   */
+  protected function extractJsonFromFile($jsonFilePath)
+  {
+    if (file_exists($jsonFilePath)) {
+      $stringifiedJson = file_get_contents($jsonFilePath);
+      return json_decode($stringifiedJson, true)[0];
+    }
+    return null;
+  }
+
+  /**
+   * Execute a stringified command with exiftool and return its result.
+   * @param $stringifiedCmd
+   * @param bool $jsonOutput
+   * @return array|null|string
+   */
+  protected function execute($stringifiedCmd, $jsonOutput = false)
+  {
+    /*return $this->trim_Multiple_Whitespaces("exiftool " . (($jsonOutput) ? "-json " : null) . $stringifiedCmd . " " . $this->filePath);*/
+    try {
+      if (file_exists($this->filePath)) {
+        $cmdResult = shell_exec($this->trim_Multiple_Whitespaces("exiftool " . (($jsonOutput) ? "-json " : null) . $stringifiedCmd . " " . $this->filePath));
+        if ($cmdResult == null) {
+          if (!$jsonOutput) {
+            return ['exiftoolMessage' => trim($cmdResult), 'success' => false];
+          } else {
+            return null;
+          }
+        } else {
+          if ($this->isJson($cmdResult)) {
+            return $this->convert_Object_To_Array(json_decode($cmdResult)[0]);
+          } else {
+            return ['exiftoolMessage' => trim($cmdResult), 'success' => true];
+          }
+        }
+      }
+      return "Error : file \" " . $this->filePath . " \" not found !";
+    } catch (Exception $exception) {
+      return $exception->getMessage();
+    }
   }
 
   /**
@@ -41,42 +110,9 @@ abstract class AbstractTasker implements TaskerInterface
     return $newArray;
   }
 
-  /**
-   * Prepare and return a string (targeting metadata) in order to add it in a exiftool command.
-   * @param string $targetedMetadata
-   * @param bool $exclusion
-   * @return string
-   */
-  protected function stringify_Targeted_Metadata($targetedMetadata = "all", $exclusion = false)
-  {
-    $stringifiedTargetedMetadata = "";
-    $prefix = "-";
-    if ($exclusion) {
-      $prefix = "--";
-    }
-    if (is_array($targetedMetadata)) {
-      $targetedMetadataLength = count($targetedMetadata);
-      $i = 0;
-      foreach ($targetedMetadata as $metadataTag) {
-        $stringifiedTargetedMetadata .= $prefix . $metadataTag;
-        if ($i++ !== $targetedMetadataLength) {
-          $stringifiedTargetedMetadata .= " ";
-        }
-      }
-    } else {
-      $targetedMetadata = trim($targetedMetadata);
-      if (!empty($targetedMetadata)) {
-        $stringifiedTargetedMetadata = $prefix . $targetedMetadata;
-      }
-    }
-    return $stringifiedTargetedMetadata;
-  }
-
-
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### GETTERS & SETTERS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-
 
   /**
    * @return mixed
@@ -84,14 +120,6 @@ abstract class AbstractTasker implements TaskerInterface
   public function getFilePath()
   {
     return $this->filePath;
-  }
-
-  /**
-   * @param mixed $filePath
-   */
-  public function setFilePath($filePath)
-  {
-    $this->filePath = $filePath;
   }
 
 

@@ -9,7 +9,6 @@ namespace PHPMetadataManager\InterfaceRepository;
 interface TaskerInterface
 {
 
-
   /*public function execute();*/
 
 }

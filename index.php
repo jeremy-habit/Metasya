@@ -19,6 +19,11 @@ Autoloader::register();
 
 $metaManager = MetadataManager::getInstance("data/images/photo1.jpg");
 
-var_dump($metaManager->reader()->readByGroup(0, "Creator"));
 
-var_dump($metaManager->writer());
+echo "<h1>Read tests</h1>";
+
+var_dump($metaManager->reader()->read(["xmp-dc:all"]));
+
+var_dump($metaManager->writer()->writeFromJsonFile("data/json/test.json", false));
+
+var_dump($metaManager->reader()->read(["xmp-dc:all"]));

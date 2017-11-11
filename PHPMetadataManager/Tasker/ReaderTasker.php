@@ -2,7 +2,6 @@
 
 namespace PHPMetadataManager\Tasker;
 
-use Exception;
 use PHPMetadataManager\Inheritance\AbstractTasker;
 
 /**
@@ -17,25 +16,47 @@ class ReaderTasker extends AbstractTasker
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
   /**
-   * Return the result of a exiftool read command with some options.
-   * @param string $stringifiedTargetedMetadata
-   * @param string $stringifiedExcludedMetadata
-   * @param null $groupOption
-   * @return array|null|string
+   * Return the stringified selected or excluded metadata tag.
+   * @param $targetedMetadata
+   * @param bool $exclusion
+   * @return string
    */
-  private function execute($stringifiedTargetedMetadata = "-all", $stringifiedExcludedMetadata = "", $groupOption = null)
+  private function stringify_Targeted_Metadata($targetedMetadata, $exclusion = false)
   {
-    try {
-      if (file_exists($this->filePath)) {
-        $cmdResult = json_decode(shell_exec("exiftool -j " . $stringifiedTargetedMetadata . " " . $stringifiedExcludedMetadata . " " . $groupOption . " " . $this->filePath))[0];
-        return ($cmdResult == null) ? null : $this->convert_Object_To_Array($cmdResult);
-      }
-      return "Error : the file \" " . $this->filePath . " \" not found !";
-    } catch (Exception $exception) {
-      return $exception->getMessage();
+    $stringifiedTargetedMetadata = "";
+    $prefix = "-";
+    if ($exclusion) {
+      $prefix = "--";
     }
+    if (is_array($targetedMetadata)) {
+      $targetedMetadataLength = count($targetedMetadata);
+      $i = 0;
+      foreach ($targetedMetadata as $metadataTag) {
+        $stringifiedTargetedMetadata .= $prefix . $metadataTag;
+        if ($i++ !== $targetedMetadataLength) {
+          $stringifiedTargetedMetadata .= " ";
+        }
+      }
+    } else {
+      $targetedMetadata = trim($targetedMetadata);
+      if (!empty($targetedMetadata)) {
+        $stringifiedTargetedMetadata = $prefix . $targetedMetadata;
+      }
+    }
+    return $stringifiedTargetedMetadata;
   }
 
+  /**
+   * Return the stringified command to execute with exiftool.
+   * @param $selectedMetadata
+   * @param $excludedMetadata
+   * @param null $optionGroup
+   * @return string
+   */
+  private function make_Stringify_Cmd($selectedMetadata, $excludedMetadata, $optionGroup = null)
+  {
+    return $this->stringify_Targeted_Metadata($selectedMetadata) . " " . $this->stringify_Targeted_Metadata($excludedMetadata, true) . " " . $optionGroup;
+  }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### PUBLIC FUNCTIONS ### */
@@ -49,31 +70,34 @@ class ReaderTasker extends AbstractTasker
    */
   public function read($selectedMetadata = "all", $excludedMetadata = "")
   {
-    return $this->execute($this->stringify_Targeted_Metadata($selectedMetadata), $this->stringify_Targeted_Metadata($excludedMetadata, true));
+    $stringifiedCmd = $this->make_Stringify_Cmd($selectedMetadata, $excludedMetadata);
+    return $this->execute($stringifiedCmd, true);
   }
 
   /**
    * Return metadata as array with the group option "-G[$num...] : Print group name for each tag.
-   * @param int $num
    * @param string $selectedMetadata
+   * @param int $num
    * @param string $excludedMetadata
    * @return array|null|string
    */
-  public function readWithPrefix($num = 0, $selectedMetadata = "all", $excludedMetadata = "")
+  public function readWithPrefix($selectedMetadata = "all", $num = 0, $excludedMetadata = "")
   {
-    return $this->execute($this->stringify_Targeted_Metadata($selectedMetadata), $this->stringify_Targeted_Metadata($excludedMetadata, true), "-G" . $num);
+    $stringifiedCmd = $this->make_Stringify_Cmd($selectedMetadata, $excludedMetadata, "-G" . $num);
+    return $this->execute($stringifiedCmd, true);
   }
 
   /**
    * Return metadata as array with the group option "-g[$num...] : Organize output by tag group.
-   * @param int $num
    * @param string $selectedMetadata
+   * @param int $num
    * @param string $excludedMetadata
    * @return array|null|string
    */
-  public function readByGroup($num = 0, $selectedMetadata = "all", $excludedMetadata = "")
+  public function readByGroup($selectedMetadata = "all", $num = 0, $excludedMetadata = "")
   {
-    return $this->execute($this->stringify_Targeted_Metadata($selectedMetadata), $this->stringify_Targeted_Metadata($excludedMetadata, true), "-g" . $num);
+    $stringifiedCmd = $this->make_Stringify_Cmd($selectedMetadata, $excludedMetadata, "-g" . $num);
+    return $this->execute($stringifiedCmd, true);
   }
 
 }

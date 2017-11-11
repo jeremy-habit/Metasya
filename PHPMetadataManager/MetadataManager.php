@@ -12,22 +12,22 @@ class MetadataManager
 {
 
   /**
-   * @var
+   * @var $instance
    */
   private static $instance;
 
   /**
-   * @var
+   * @var string $filePath
    */
   private $filePath;
 
   /**
-   * @var ReaderTasker
+   * @var ReaderTasker $reader
    */
   private $reader;
 
   /**
-   * @var WriterTasker
+   * @var WriterTasker $writer
    */
   private $writer;
 
@@ -39,8 +39,19 @@ class MetadataManager
   private function __construct($filePath)
   {
     $this->filePath = $filePath;
+    $this->initialize_Taskers();
+  }
+
+  /**
+   * Initialize taskers with the $filePath.
+   * Useful when a new MetadataManger is created or when the $filePath is changed.
+   */
+  private function initialize_Taskers()
+  {
+    unset($this->reader);
+    unset($this->writer);
     $this->reader = new ReaderTasker($this->filePath);
-    $this->writer = new WriterTasker($this->filePath);
+    $this->writer = new WriterTasker($this->filePath, $this->reader);
   }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
@@ -89,8 +100,7 @@ class MetadataManager
   public function setFilePath($filePath)
   {
     $this->filePath = $filePath;
-    $this->reader->setFilePath($filePath);
-    $this->writer->setFilePath($filePath);
+    $this->initialize_Taskers();
   }
 
 
