@@ -68,7 +68,7 @@ class ReaderTasker extends AbstractTasker
    * @param string $excludedMetadata
    * @return array|null|string
    */
-  public function read($selectedMetadata = "all", $excludedMetadata = "")
+  public function read($selectedMetadata = "all", $excludedMetadata = null)
   {
     $stringifiedCmd = $this->make_Stringify_Cmd($selectedMetadata, $excludedMetadata);
     return $this->execute($stringifiedCmd, true);
@@ -94,7 +94,7 @@ class ReaderTasker extends AbstractTasker
    * @param string $excludedMetadata
    * @return array|null|string
    */
-  public function readByGroup($selectedMetadata = "all", $num = 0, $excludedMetadata = "")
+  public function readByGroup($selectedMetadata = "all", $num = 0, $excludedMetadata = null)
   {
     $stringifiedCmd = $this->make_Stringify_Cmd($selectedMetadata, $excludedMetadata, "-g" . $num);
     return $this->execute($stringifiedCmd, true);

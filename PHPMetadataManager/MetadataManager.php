@@ -4,6 +4,7 @@ namespace PHPMetadataManager;
 
 use PHPMetadataManager\Tasker\ReaderTasker;
 use PHPMetadataManager\Tasker\WriterTasker;
+use PHPMetadataManager\Tasker\EraserTasker;
 
 /**
  * Class MetadataManager
@@ -31,6 +32,11 @@ class MetadataManager
    */
   private $writer;
 
+  /**
+   * @var EraserTasker $eraser
+   */
+  private $eraser;
+
 
   /**
    * MetadataManager constructor.
@@ -50,8 +56,10 @@ class MetadataManager
   {
     unset($this->reader);
     unset($this->writer);
+    unset($this->eraser);
     $this->reader = new ReaderTasker($this->filePath);
     $this->writer = new WriterTasker($this->filePath, $this->reader);
+    $this->eraser = new EraserTasker($this->filePath);
   }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
@@ -84,6 +92,14 @@ class MetadataManager
   public function writer()
   {
     return $this->writer;
+  }
+
+  /**
+   * @return EraserTasker
+   */
+  public function eraser()
+  {
+    return $this->eraser;
   }
 
   /**
