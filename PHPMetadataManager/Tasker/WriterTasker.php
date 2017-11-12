@@ -134,10 +134,4 @@ class WriterTasker extends AbstractTasker
     return false;
   }
 
-  /* @TODO */
-  public function reset()
-  {
-    /* remove all and then write (same parmas as function write)*/
-  }
-
 }

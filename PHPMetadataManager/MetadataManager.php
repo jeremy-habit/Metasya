@@ -62,6 +62,52 @@ class MetadataManager
     $this->eraser = new EraserTasker($this->filePath);
   }
 
+
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+  /* ### PUBLIC FUNCTIONS ### */
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+
+  /* EraserTasker */
+
+  public function remove($targetedMetadata = "all", $excludedMetadata = null, $overwrite = true)
+  {
+    return $this->eraser->remove($targetedMetadata, $excludedMetadata, $overwrite);
+  }
+
+  /* ReaderTasker */
+
+  public function read($selectedMetadata = "all", $excludedMetadata = null)
+  {
+    return $this->reader->read($selectedMetadata, $excludedMetadata);
+  }
+
+  public function readWithPrefix($selectedMetadata = "all", $num = 0, $excludedMetadata = null)
+  {
+    return $this->reader->readWithPrefix($selectedMetadata, $num, $excludedMetadata);
+  }
+
+  public function readByGroup($selectedMetadata = "all", $num = 0, $excludedMetadata = null)
+  {
+    return $this->reader()->readByGroup($selectedMetadata, $num, $excludedMetadata);
+  }
+
+  /* WriterTasker */
+
+  public function write($targetedMetadata = null, $replace = true, $overwrite = true)
+  {
+    return $this->writer->write($targetedMetadata, $replace, $overwrite);
+  }
+
+  public function writeFromJsonFile($jsonFilePath = null, $replace = true, $overwrite = true)
+  {
+    return $this->writer->writeFromJsonFile($jsonFilePath, $replace, $overwrite);
+  }
+
+  public function writeFromJson($json, $replace = true, $overwrite = true)
+  {
+    return $this->writer->writeFromJson($json, $replace, $overwrite);
+  }
+
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### GETTERS & SETTERS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
