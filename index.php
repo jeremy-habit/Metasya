@@ -22,4 +22,4 @@ $metadataManager = MetadataManager::getInstance("data/images/photo1.jpg");
 
 echo "<h1>Read tests</h1>";
 
-var_dump($metadataManager->reader()->read("XMP-dc:all", "XMP-dc:Subject"));
+var_dump($metadataManager->reader()->read("XMP-dc:all"));
