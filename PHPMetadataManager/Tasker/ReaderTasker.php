@@ -75,20 +75,20 @@ class ReaderTasker extends AbstractTasker
   }
 
   /**
-   * Return metadata as array with the group option "-G[$num...] : Print group name for each tag.
+   * Return metadata as array with the group option -G[$num...] : Print group name for each tag.
    * @param string $selectedMetadata
    * @param int $num
    * @param string $excludedMetadata
    * @return array|null|string
    */
-  public function readWithPrefix($selectedMetadata = "all", $num = 0, $excludedMetadata = "")
+  public function readWithPrefix($selectedMetadata = "all", $num = 0, $excludedMetadata = null)
   {
     $stringifiedCmd = $this->make_Stringify_Cmd($selectedMetadata, $excludedMetadata, "-G" . $num);
     return $this->execute($stringifiedCmd, true);
   }
 
   /**
-   * Return metadata as array with the group option "-g[$num...] : Organize output by tag group.
+   * Return metadata as array with the group option -g[$num...] : Organize output by tag group.
    * @param string $selectedMetadata
    * @param int $num
    * @param string $excludedMetadata
