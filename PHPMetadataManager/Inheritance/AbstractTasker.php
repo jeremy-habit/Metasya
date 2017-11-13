@@ -3,13 +3,12 @@
 namespace PHPMetadataManager\Inheritance;
 
 use Exception;
-use PHPMetadataManager\InterfaceRepository\TaskerInterface;
 
 /**
  * Class AbstractTasker
  * @package PHPMetadataManager\Inheritance
  */
-abstract class AbstractTasker implements TaskerInterface
+abstract class AbstractTasker
 {
   /**
    * @var string $filePath
@@ -23,42 +22,6 @@ abstract class AbstractTasker implements TaskerInterface
   public function __construct($filePath)
   {
     $this->filePath = $filePath;
-  }
-
-  /**
-   * Replace the multiple whitespaces by one whitespace.
-   * @param $stringifiedCmd
-   * @return mixed
-   */
-  private function trim_Multiple_Whitespaces($stringifiedCmd)
-  {
-    return trim(preg_replace("/ {2,}/", " ", $stringifiedCmd));
-  }
-
-
-  /**
-   * Check if a string is json or not (true or false)
-   * @param $string
-   * @return bool
-   */
-  protected function isJson($string)
-  {
-    json_decode($string);
-    return (json_last_error() == JSON_ERROR_NONE);
-  }
-
-  /**
-   * Return json file content as array
-   * @param $jsonFilePath
-   * @return null|array
-   */
-  protected function extractJsonFromFile($jsonFilePath)
-  {
-    if (file_exists($jsonFilePath)) {
-      $stringifiedJson = file_get_contents($jsonFilePath);
-      return json_decode($stringifiedJson, true)[0];
-    }
-    return null;
   }
 
   /**
@@ -93,9 +56,48 @@ abstract class AbstractTasker implements TaskerInterface
     }
   }
 
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+  /* ### TOOLS ### */
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+
+  /**
+   * Replace the multiple whitespaces by one whitespace.
+   * @param $text
+   * @return mixed
+   */
+  private function trim_Multiple_Whitespaces($text)
+  {
+    return trim(preg_replace("/ {2,}/", " ", $text));
+  }
+
+  /**
+   * Check if a string is json or not (true or false)
+   * @param $text
+   * @return bool
+   */
+  protected function isJson($text)
+  {
+    json_decode($text);
+    return (json_last_error() == JSON_ERROR_NONE);
+  }
+
+  /**
+   * Return json file content as array
+   * @param $jsonFilePath
+   * @return null|array
+   */
+  protected function extractJsonFromFile($jsonFilePath)
+  {
+    if (file_exists($jsonFilePath)) {
+      $stringifiedJson = file_get_contents($jsonFilePath);
+      return json_decode($stringifiedJson, true)[0];
+    }
+    return null;
+  }
+
   /**
    * Convert any object to array recursively.
-   * @param $obj
+   * @param $obj object
    * @return array
    */
   protected function convert_Object_To_Array($obj)

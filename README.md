@@ -30,7 +30,7 @@ The **ReaderTasker** allow to read file's metadata. You can use 3 features which
     * params :
         * **$selectedMetadata** ( default : "all" ) : Indicates metadata you want to read. Can be a **String** or an **Array**.
         * **$excludedMetadata** ( default : null ) : Indicates metadata you won't to read. Can be a **String** or an **Array**.
-    * return : array | null
+    * return : array | null | string
     * examples :
         * Read all metadata :
     
@@ -78,7 +78,7 @@ The **ReaderTasker** allow to read file's metadata. You can use 3 features which
         * **$selectedMetadata** ( default : "all" ) : Indicates metadata you want to read. Can be a **String** or an **Array**.
         * **$num** ( default : 0 ) : Indicates the level of group.
         * **$excludedMetadata** ( default : null ) : Indicates metadata you won't to read. Can be a **String** or an **Array**.
-    * return : array | null
+    * return : array | null | string
     * examples :
         * Read all metadata with the group level 1 :
         
@@ -119,7 +119,7 @@ The **ReaderTasker** allow to read file's metadata. You can use 3 features which
         * **$selectedMetadata** ( default : "all" ) : Indicates metadata you want to read. Can be a **String** or an **Array**.
         * **$num** ( default : 0 ) : Indicates the level of group.
         * **$excludedMetadata** ( default : null ) : Indicates metadata you won't to read. Can be a **String** or an **Array**.
-     * return : array | null
+     * return : array | null | string
      * examples :
          * Read all metadata :
          
@@ -156,7 +156,7 @@ The WriterTasker allow to add metadata to a file or to edit file's metadata. You
         * **$targetedMetadata** ( default : null ) : Indicates metadata you want to add or edit.
         * **$replace** ( default : true ) : Indicates if the metadata value must be replaced if the metadata already exists.
         * **$overwrite** ( default : true ) : Indicates if the addition or the modification must be applied to the original file or to a copy. It's corresponds to the use of the exiftool option -overwrite_original.
-    * return : array with potentially the command return message and the success of the command as boolean : true or false.
+    * return : string | array with potentially the command return message and the success of the command as boolean : true or false.
     * examples :
         * Write some XMP Dublin Core metadata :
     
@@ -192,7 +192,7 @@ The WriterTasker allow to add metadata to a file or to edit file's metadata. You
         * **$jsonFilePath** ( default : null ) : Indicates the path of the json file which contains metadata tags to use.
         * **$replace** ( default : true ) : Indicates if the metadata value must be replaced if the metadata already exists.
         * **$overwrite** ( default : true ) : Indicates if the addition or the modification must be applied to the original file or to a copy. It's corresponds to the use of the exiftool option -overwrite_original.
-    * return : array with potentially the command return message and the success of the command as boolean : true or false.
+    * return : string | array with potentially the command return message and the success of the command as boolean : true or false.
     * examples :
         * Write metadata from json file :
     
@@ -222,7 +222,7 @@ The WriterTasker allow to add metadata to a file or to edit file's metadata. You
         * **$json** : Indicates the json string which contains metadata tags to use.
         * **$replace** ( default : true ) : Indicates if the metadata value must be replaced if the metadata already exists.
         * **$overwrite** ( default : true ) : Indicates if the addition or the modification must be applied to the original file or to a copy. It's corresponds to the use of the exiftool option -overwrite_original.
-    * return : array with potentially the command return message and the success of the command as boolean : true or false.
+    * return : string | array with potentially the command return message and the success of the command as boolean : true or false.
     * examples :
         * Write metadata from json file :
     
@@ -261,7 +261,7 @@ The EraserTasker allow to remove file's metadata. Only one feature is available 
         * **$targetedMetadata** ( default : "all" ) : Indicates metadata you want to remove. Can be a **String** or an **Array**.
         * **$excludedMetadata** ( default : null ) : Indicates metadata you won't to remove. Can be a **String** or an **Array**.
         * **$overwrite** ( default : true ) : Indicates if the deletion must be applied to the original file or to a copy. It's corresponds to the use of the exiftool option -overwrite_original.
-    * return : array with potentially the command return message and the success of the command as boolean : true or false.
+    * return : string | array with potentially the command return message and the success of the command as boolean : true or false.
     * examples :
         * Remove all metadata :
     
@@ -288,3 +288,7 @@ The EraserTasker allow to remove file's metadata. Only one feature is available 
                 array (size=2)
                   'exiftoolMessage' => string '1 image files updated' (length=21)
                   'success' => boolean true
+
+### UML
+
+![UML of PHP-Metadata-Manager Project](https://octodex.github.com/images/yaktocat.png)
