@@ -3,9 +3,9 @@ Library allowing the management of embarked metadatas on diverse types of files,
 
 ## The MetadataManager Object
 ### Create the object
-In order to manage metadata of a file you have to create a new **MetadataManager** object with the path of the file. Note this object use the singleton pattern.
+In order to manage metadata of a file you have to create a new **MetadataManager** object with the path of the file.
 
-    $metadataManager = MetadataManager::getInstance("data/images/photo1.jpg");
+    $metadataManager = new MetadataManager("data/images/photo1.jpg");
 
 ### Change the path of the file
 
@@ -291,4 +291,4 @@ The EraserTasker allow to remove file's metadata. Only one feature is available 
 
 ### UML
 
-![UML of PHP-Metadata-Manager Project](https://raw.githubusercontent.com/jeremy-habit/PHP-Metadata-Manager/master/PHP_metadata_manager_Diagram.jpg)
+![UML of PHP-Metadata-Manager Project](https://raw.githubusercontent.com/jeremy-habit/PHP-Metadata-Manager/master/PHP_METADATA_MANAGER.jpg)

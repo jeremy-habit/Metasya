@@ -13,11 +13,6 @@ class MetadataManager
 {
 
   /**
-   * @var $instance
-   */
-  private static $instance;
-
-  /**
    * @var string $filePath
    */
   private $filePath;
@@ -42,7 +37,7 @@ class MetadataManager
    * MetadataManager constructor.
    * @param $filePath
    */
-  private function __construct($filePath)
+  public function __construct($filePath)
   {
     $this->filePath = $filePath;
     $this->initialize_Taskers();
@@ -111,18 +106,6 @@ class MetadataManager
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### GETTERS & SETTERS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-
-  /**
-   * Method to reach the UNIQUE instance of the class.
-   * @return MetadataManager
-   */
-  public static function getInstance($filePath)
-  {
-    if (!(self::$instance instanceof self)) {
-      self::$instance = new self($filePath);
-    }
-    return self::$instance;
-  }
 
   /**
    * @return ReaderTasker
