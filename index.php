@@ -20,6 +20,5 @@ Autoloader::register();
 $metadataManager = MetadataManager::getInstance("data/images/photo1.jpg");
 
 
-echo "<h1>Read tests</h1>";
 
 var_dump($metadataManager->read("XMP-dc:all"));
