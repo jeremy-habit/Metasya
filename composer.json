@@ -1,7 +1,9 @@
 {
-  "name": "jeremy-habit/php-metadata-manager",
+  "name": "magicmonkey/php-metadata-manager",
   "description": "Library allowing the management of embarked metadatas on diverse types of files, to manage the import of metadatas in an information system and the synchronization of the data between the information system and files with exiftool.",
   "type": "library",
+  "keywords": ["twitter search", "search"],
+  "version": "1.0.0",
   "authors": [
     {
       "name": "Jeremy Habit",
