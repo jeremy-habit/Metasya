@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPMetadataManager\Inheritance;
+namespace src\Inheritance;
 
 use Exception;
 

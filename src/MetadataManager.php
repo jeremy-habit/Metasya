@@ -1,10 +1,10 @@
 <?php
 
-namespace PHPMetadataManager;
+namespace src;
 
-use PHPMetadataManager\Tasker\ReaderTasker;
-use PHPMetadataManager\Tasker\WriterTasker;
-use PHPMetadataManager\Tasker\EraserTasker;
+use src\Tasker\ReaderTasker;
+use src\Tasker\WriterTasker;
+use src\Tasker\EraserTasker;
 
 /**
  * Class MetadataManager

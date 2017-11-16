@@ -1,8 +1,8 @@
 <?php
 
-namespace PHPMetadataManager\Tasker;
+namespace src\Tasker;
 
-use PHPMetadataManager\Inheritance\AbstractTasker;
+use src\Inheritance\AbstractTasker;
 
 /**
  * Class ReaderTasker

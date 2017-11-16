@@ -1,6 +1,6 @@
 <?php
 
-use PHPMetadataManager\MetadataManager;
+use src\MetadataManager;
 
 
 /* ### CONFIG */

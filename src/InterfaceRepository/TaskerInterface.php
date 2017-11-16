@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPMetadataManager\InterfaceRepository;
+namespace src\InterfaceRepository;
 
 /**
  * Interface TaskerInterface
