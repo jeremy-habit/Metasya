@@ -1,10 +1,10 @@
 <?php
 
-namespace src;
+namespace MagicMonkey\PHPMetadataManager;
 
-use src\Tasker\ReaderTasker;
-use src\Tasker\WriterTasker;
-use src\Tasker\EraserTasker;
+use MagicMonkey\PHPMetadataManager\Tasker\ReaderTasker;
+use MagicMonkey\PHPMetadataManager\Tasker\WriterTasker;
+use MagicMonkey\PHPMetadataManager\Tasker\EraserTasker;
 
 /**
  * Class MetadataManager

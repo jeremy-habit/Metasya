@@ -291,4 +291,4 @@ The EraserTasker allow to remove file's metadata. Only one feature is available 
 
 ### UML
 
-![UML of PHP-Metadata-Manager Project](https://raw.githubusercontent.com/jeremy-habit/PHP-Metadata-Manager/master/PHP_METADATA_MANAGER.jpg)
+![UML of PHP-Metadata-Manager Project](https://raw.githubusercontent.com/jeremy-habit/PHP-Metadata-Manager/master/documentation/PHP_METADATA_MANAGER.jpg)

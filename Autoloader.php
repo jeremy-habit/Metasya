@@ -1,5 +1,9 @@
 <?php
 
+define('DS', DIRECTORY_SEPARATOR); // meilleur portabilité sur les différents systeme.
+define('ROOT', dirname(__FILE__) . DS); // pour se simplifier la vie
+define('APP_BASEFILE', "src" . DS);
+
 class Autoloader
 {
 
@@ -10,7 +14,6 @@ class Autoloader
 
   public static function autoload($class)
   {
-    // var_dump($class); => App\Tester\Test
 
     // on explose notre variable $class par \
     $parts = preg_split('#\\\#', $class);
@@ -24,7 +27,7 @@ class Autoloader
     $path = implode(DS, $parts);
     $file = $className . '.php';
 
-    $filepath = ROOT . strtolower($path) . DS . $file;
+    $filepath = ROOT . APP_BASEFILE . strtolower($path) . DS . $file;
 
     // var_dump($filepath); => C:\xampp\htdocs\Labs\Eloyas\app\tester\Test.php
     //

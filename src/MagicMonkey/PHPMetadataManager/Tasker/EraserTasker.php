@@ -1,12 +1,12 @@
 <?php
 
-namespace src\Tasker;
+namespace MagicMonkey\PHPMetadataManager\Tasker;
 
-use src\Inheritance\AbstractTasker;
+use MagicMonkey\PHPMetadataManager\Inheritance\AbstractTasker;
 
 /**
  * Class EraserTasker
- * @package PHPMetadataManager\Tasker
+ * @package MagicMonkey\PHPMetadataManager\Tasker
  */
 class EraserTasker extends AbstractTasker
 {

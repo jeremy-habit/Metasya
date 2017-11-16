@@ -1,12 +1,12 @@
 <?php
 
-namespace src\Tasker;
+namespace MagicMonkey\PHPMetadataManager\Tasker;
 
-use src\Inheritance\AbstractTasker;
+use MagicMonkey\PHPMetadataManager\Inheritance\AbstractTasker;
 
 /**
  * Class WriterTasker
- * @package PHPMetadataManager\Tasker
+ * @package MagicMonkey\PHPMetadataManager\Tasker
  */
 class WriterTasker extends AbstractTasker
 {
