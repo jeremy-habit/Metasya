@@ -2,12 +2,13 @@
 
 /* ### LOADER */
 
-use MagicMonkey\PHPMetadataManager\MetadataManager;
+
+use MagicMonkey\Metasya\MetadataHelper;
 
 require_once 'Autoloader.php';
 Autoloader::register();
 
 /* ### MAIN */
 
-$metadataManager = new MetadataManager("data/images/photo1.jpg");
-var_dump($metadataManager->read("XMP-dc:all"));
+$metadataHelper = new MetadataHelper("data/images/photo1.jpg");
+var_dump($metadataHelper->read("XMP-dc:all"));

@@ -1,8 +1,14 @@
 {
-  "name": "magicmonkey/php-metadata-manager",
+  "name": "magicmonkey/metasya",
   "description": "Library allowing the management of embarked metadatas on diverse types of files, to manage the import of metadatas in an information system and the synchronization of the data between the information system and files with exiftool.",
   "type": "library",
-  "keywords": ["embarked metadatas", "management", "library", "synchronization of the data between the information system", "exiftool"],
+  "keywords": [
+    "embarked metadatas",
+    "management",
+    "library",
+    "synchronization of the data between the information system",
+    "exiftool"
+  ],
   "version": "1.0.0",
   "authors": [
     {
@@ -16,7 +22,7 @@
   },
   "autoload": {
     "psr-4": {
-      "": "src/"
+      "MagicMonkey/Metasya//": "src/"
     }
   },
   "license": "MIT"

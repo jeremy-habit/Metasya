@@ -1,12 +1,12 @@
 <?php
 
-namespace MagicMonkey\PHPMetadataManager\Tasker;
+namespace MagicMonkey\Metasya\Tasker;
 
-use MagicMonkey\PHPMetadataManager\Inheritance\AbstractTasker;
+use MagicMonkey\Metasya\Inheritance\AbstractTasker;
 
 /**
  * Class WriterTasker
- * @package MagicMonkey\PHPMetadataManager\Tasker
+ * @package MagicMonkey\Metasya\Tasker
  */
 class WriterTasker extends AbstractTasker
 {

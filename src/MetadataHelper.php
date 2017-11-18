@@ -1,15 +1,15 @@
 <?php
 
-namespace MagicMonkey\PHPMetadataManager;
+namespace MagicMonkey\Metasya;
 
-use MagicMonkey\PHPMetadataManager\Tasker\ReaderTasker;
-use MagicMonkey\PHPMetadataManager\Tasker\WriterTasker;
-use MagicMonkey\PHPMetadataManager\Tasker\EraserTasker;
+use MagicMonkey\Metasya\Tasker\ReaderTasker;
+use MagicMonkey\Metasya\Tasker\WriterTasker;
+use MagicMonkey\Metasya\Tasker\EraserTasker;
 
 /**
- * Class MetadataManager
+ * Class MetadataHelper
  */
-class MetadataManager
+class MetadataHelper
 {
 
   /**
@@ -34,7 +34,7 @@ class MetadataManager
 
 
   /**
-   * MetadataManager constructor.
+   * MetadataHelper constructor.
    * @param $filePath
    */
   public function __construct($filePath)

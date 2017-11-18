@@ -3,6 +3,7 @@
 define('DS', DIRECTORY_SEPARATOR); // meilleur portabilité sur les différents systeme.
 define('ROOT', dirname(__FILE__) . DS); // pour se simplifier la vie
 define('APP_BASEFILE', "src" . DS);
+define('PSR_4', ["MagicMonkey", "Metasya"]);
 
 class Autoloader
 {
@@ -17,6 +18,12 @@ class Autoloader
 
     // on explose notre variable $class par \
     $parts = preg_split('#\\\#', $class);
+
+    foreach (PSR_4 as $virtualDirectory) {
+      if (($key = array_search($virtualDirectory, $parts)) !== false) {
+        unset($parts[$key]);
+      }
+    }
 
     // on extrait le dernier element
     $className = array_pop($parts);

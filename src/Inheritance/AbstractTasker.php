@@ -1,12 +1,12 @@
 <?php
 
-namespace MagicMonkey\PHPMetadataManager\Inheritance;
+namespace MagicMonkey\Metasya\Inheritance;
 
 use Exception;
 
 /**
  * Class AbstractTasker
- * @package MagicMonkey\PHPMetadataManager\Inheritance
+ * @package MagicMonkey\Metasya\Inheritance
  */
 abstract class AbstractTasker
 {
