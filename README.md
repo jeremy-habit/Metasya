@@ -31,7 +31,6 @@ Library allowing the management of embarked metadatas on diverse types of files,
         
         /* Look all medatadata of photo1.jpg */
         var_dump($metadataHelper->read());
-        
 
 ## Usage : Here we go !
 ### The MetadataHelper Object
@@ -52,7 +51,7 @@ The **MetadataHelper** object has several **Taskers**. Each **Tasker** bring fea
 What is **Exiftool** ? Take a look here : https://www.sno.phy.queensu.ca/~phil/exiftool/
 
 
-#### ReaderTasker
+### ReaderTasker
 
 The **ReaderTasker** allow to read file's metadata. You can use 3 features which are :
 
@@ -177,7 +176,7 @@ The **ReaderTasker** allow to read file's metadata. You can use 3 features which
                    'XMP-dc:Title' => string 'Abandoned Packard Automobile Factory, Detroit' (length=45)
                  
     
-#### WriterTasker
+### WriterTasker
 
 The WriterTasker allow to add metadata to a file or to edit file's metadata. You can use 3 features which are :
 
@@ -282,7 +281,7 @@ The WriterTasker allow to add metadata to a file or to edit file's metadata. You
                   'exiftoolMessage' => string '1 image files updated' (length=21)
                   'success' => boolean true     
 
-#### EraserTasker
+### EraserTasker
 
 The EraserTasker allow to remove file's metadata. Only one feature is available at this moment :
 
