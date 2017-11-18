@@ -1,8 +1,5 @@
 <?php
 
-/* ### LOADER */
-
-
 use MagicMonkey\Metasya\MetadataHelper;
 
 require_once 'Autoloader.php';

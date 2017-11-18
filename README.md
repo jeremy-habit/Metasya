@@ -1,27 +1,58 @@
 # Metasya ( PHP-Metadata-Manager )
 Library allowing the management of embarked metadatas on diverse types of files, to manage the import of metadatas in an information system and the synchronization of the data between the information system and files with exiftool.
 
-## The MetadataHelper Object
-### Create the object
+## Install
+
+1. You have to use [Composer](https://getcomposer.org/), a tool for dependency management in PHP :
+
+        composer require magicmonkey/metasya
+    
+    Metasya is enregistred as package on Packagist : [https://packagist.org/packages/magicmonkey/metasya](https://packagist.org/packages/magicmonkey/metasya)
+
+2. To activate the autoloader, you may need to type the following command into the command line :
+
+        composer dumpautoload -o
+
+3. You can write in a file like index.php a code that tests if Metasya that you have just downloaded really works :
+
+        ```php
+        /* index.php */
+        
+        <?php
+        
+        /* import the needed class */
+        use MagicMonkey\Metasya\MetadataHelper; 
+        
+        /* include the composer autoloader */
+        include __DIR__ . "/vendor/autoload.php";
+        
+        /* Create a MetadataHelper Object with a file path as parameter */
+        $metadataHelper = new MetadataHelper("photo1.jpg");  
+        
+        /* Look all medatadata of photo1.jpg */
+        var_dump($metadataHelper->read());
+        
+
+## Usage : Here we go !
+### The MetadataHelper Object
+#### Create the object
 In order to manage metadata of a file you have to create a new **MetadataHelper** object with the path of the file.
 
     $metadataHelper = new MetadataHelper("data/images/photo1.jpg");
 
-### Change the path of the file
+#### Change the path of the file
+If you have to change the path of the file, you can proceed as described bellow :
 
     $metadataHelper->setFilePath("data/images/photo2.jpg");
 
-## Notion of Taskers
+### Notion of Taskers
 
 The **MetadataHelper** object has several **Taskers**. Each **Tasker** bring features thanks the use of exiftool.
 
 What is **Exiftool** ? Take a look here : https://www.sno.phy.queensu.ca/~phil/exiftool/
 
 
-
-
-
-### ReaderTasker
+#### ReaderTasker
 
 The **ReaderTasker** allow to read file's metadata. You can use 3 features which are :
 
@@ -146,7 +177,7 @@ The **ReaderTasker** allow to read file's metadata. You can use 3 features which
                    'XMP-dc:Title' => string 'Abandoned Packard Automobile Factory, Detroit' (length=45)
                  
     
-### WriterTasker
+#### WriterTasker
 
 The WriterTasker allow to add metadata to a file or to edit file's metadata. You can use 3 features which are :
 
@@ -251,7 +282,7 @@ The WriterTasker allow to add metadata to a file or to edit file's metadata. You
                   'exiftoolMessage' => string '1 image files updated' (length=21)
                   'success' => boolean true     
 
-### EraserTasker
+#### EraserTasker
 
 The EraserTasker allow to remove file's metadata. Only one feature is available at this moment :
 
@@ -289,6 +320,6 @@ The EraserTasker allow to remove file's metadata. Only one feature is available 
                   'exiftoolMessage' => string '1 image files updated' (length=21)
                   'success' => boolean true
 
-### UML
+## UML
 
 ![UML of PHP-Metadata-Manager Project](https://raw.githubusercontent.com/jeremy-habit/PHP-Metadata-Manager/master/documentation/PHP_METADATA_MANAGER.jpg)
