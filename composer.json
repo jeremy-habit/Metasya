@@ -22,7 +22,7 @@
   },
   "autoload": {
     "psr-4": {
-      "MagicMonkey//Metasya//": "src/"
+      "MagicMonkey\\Metasya\\": "src/"
     }
   },
   "license": "MIT"
