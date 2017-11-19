@@ -15,22 +15,21 @@ Library allowing the management of embarked metadatas on diverse types of files,
 
 3. You can write in a file like index.php a code that tests if Metasya that you have just downloaded really works :
 
-        ```php
-        /* index.php */
-        
-        <?php
-        
-        /* import the needed class */
-        use MagicMonkey\Metasya\MetadataHelper; 
-        
-        /* include the composer autoloader */
-        include __DIR__ . "/vendor/autoload.php";
-        
-        /* Create a MetadataHelper Object with a file path as parameter */
-        $metadataHelper = new MetadataHelper("photo1.jpg");  
-        
-        /* Look all medatadata of photo1.jpg */
-        var_dump($metadataHelper->read());
+    ```php
+    <?php
+     /* index.php */
+     
+    /* import the needed class */
+    use MagicMonkey\Metasya\MetadataHelper; 
+    
+    /* include the composer autoloader */
+    include __DIR__ . "/vendor/autoload.php";
+    
+    /* Create a MetadataHelper Object with a file path as parameter */
+    $metadataHelper = new MetadataHelper("photo1.jpg");  
+    
+    /* Look all medatadata of photo1.jpg */
+    var_dump($metadataHelper->read());
 
 ## Usage : Here we go !
 ### The MetadataHelper Object
@@ -38,6 +37,9 @@ Library allowing the management of embarked metadatas on diverse types of files,
 In order to manage metadata of a file you have to create a new **MetadataHelper** object with the path of the file.
 
     $metadataHelper = new MetadataHelper("data/images/photo1.jpg");
+    
+#### Use your own exiftool
+By default, Metasya uses the provided exiftool. However it is possible to use the one you installed on your computer in two different ways :
 
 #### Change the path of the file
 If you have to change the path of the file, you can proceed as described bellow :
