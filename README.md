@@ -5,7 +5,7 @@ Library allowing the management of embarked metadatas on diverse types of files,
 
 1. You have to use [Composer](https://getcomposer.org/), a tool for dependency management in PHP :
 
-    ````shell
+    ````bash
     composer require magicmonkey/metasya
     ````
     
@@ -13,7 +13,7 @@ Library allowing the management of embarked metadatas on diverse types of files,
 
 2. To activate the autoloader, you may need to type the following command into the command line :
 
-    ````shell
+    ````bash
     composer dumpautoload -o
     ````
 
