@@ -9,6 +9,8 @@ Autoloader::register();
 
 $metadataHelper = new MetadataHelper("data/images/photo1.jpg");
 
+var_dump($metadataHelper->getUsedExiftoolVersion());
+
 var_dump($metadataHelper->getExiftoolVersionsInfo());
 
 var_dump($metadataHelper->read());

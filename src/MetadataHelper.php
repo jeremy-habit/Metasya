@@ -81,7 +81,7 @@ class MetadataHelper
   }
 
   /**
-   * Return the version of exiftool (provided version or user version)
+   * Return the version of exiftool (provided version or installed/local version)
    * @param bool $providedExiftoolVersion
    * @return string
    */
@@ -98,10 +98,10 @@ class MetadataHelper
   /* Version */
 
   /**
-   * Return the user exiftool version
+   * Return the installed/local exiftool version
    * @return string
    */
-  public function getUserExiftoolVersion()
+  public function getLocalExiftoolVersion()
   {
     return $this->get_Exiftool_Version(false);
   }
@@ -122,7 +122,7 @@ class MetadataHelper
   public function getUsedExiftoolVersion()
   {
     return [
-      ($this->useProvidedExiftool) ? "Provided" : "User" => $this->get_Exiftool_Version($this->useProvidedExiftool)
+      ($this->useProvidedExiftool) ? "Provided" : "Local" => $this->get_Exiftool_Version($this->useProvidedExiftool)
     ];
   }
 
@@ -133,7 +133,7 @@ class MetadataHelper
   public function getExiftoolVersionsInfo()
   {
     $versionsInfo = [
-      "User" => $this->getUserExiftoolVersion(),
+      "Local" => $this->getLocalExiftoolVersion(),
       "Provided" => $this->getProvidedExiftoolVersion(),
       "Used" => $this->getUsedExiftoolVersion()
     ];

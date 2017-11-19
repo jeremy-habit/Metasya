@@ -5,17 +5,21 @@ Library allowing the management of embarked metadatas on diverse types of files,
 
 1. You have to use [Composer](https://getcomposer.org/), a tool for dependency management in PHP :
 
-        composer require magicmonkey/metasya
+    ````shell
+    composer require magicmonkey/metasya
+    ````
     
     Metasya is enregistred as package on Packagist : [https://packagist.org/packages/magicmonkey/metasya](https://packagist.org/packages/magicmonkey/metasya)
 
 2. To activate the autoloader, you may need to type the following command into the command line :
 
-        composer dumpautoload -o
+    ````shell
+    composer dumpautoload -o
+    ````
 
 3. You can write in a file like index.php a code that tests if Metasya that you have just downloaded really works :
 
-    ```php
+    ````php
     <?php
      /* index.php */
      
@@ -30,21 +34,84 @@ Library allowing the management of embarked metadatas on diverse types of files,
     
     /* Look all medatadata of photo1.jpg */
     var_dump($metadataHelper->read());
+    ````
 
 ## Usage : Here we go !
 ### The MetadataHelper Object
 #### Create the object
 In order to manage metadata of a file you have to create a new **MetadataHelper** object with the path of the file.
 
-    $metadataHelper = new MetadataHelper("data/images/photo1.jpg");
-    
-#### Use your own exiftool
-By default, Metasya uses the provided exiftool. However it is possible to use the one you installed on your computer in two different ways :
+````php
+<?php
+
+use MagicMonkey\Metasya\MetadataHelper;
+
+$metadataHelper = new MetadataHelper("data/images/photo1.jpg");
+````
+
+#### Use the exiftool version installed on your computer
+By default, Metasya uses the provided exiftool. However it is possible to use the one installed on your computer in two different ways :
+
+````php
+<?php
+
+use MagicMonkey\Metasya\MetadataHelper;
+
+/* First way via the constructor : passing as second parameter the boolean false which indicates to not use the provided exiftool */
+
+$metadataHelper = new MetadataHelper("data/images/photo1.jpg", false);
+
+/* Second way via the setter : set the attribute named "useProvidedExiftool" to false */
+
+$metadataHelper = new MetadataHelper("data/images/photo1.jpg");
+$metadataHelper->setUseProvidedExiftool(false);
+
+
+````
+
+#### Version information
+
+Different functions are available in order to get information about the version of exiftool.
+
+````php
+<?php
+
+/* Get the version of the exiftool installed on your computer else return null */
+echo $metadataHelper->getLocalExiftoolVersion();
+
+/* Get the version of the provided exiftool by Metasya */
+echo $metadataHelper->getProvidedExiftoolVersion();
+
+/* Return an array which indicates if Metasya used the local or the provided exiftool and the version of the used exiftool */
+echo $metadataHelper->getUsedExiftoolVersion();
+
+/* example : 
+array (size=1)
+  'Provided' => string '10.67' (length=6)
+*/
+
+/* return an array which contains 3 information above */
+var_dump($metadataHelper->getExiftoolVersionsInfo());
+
+/* example : 
+
+ array (size=3)
+   'Local' => null     ----> exiftool not installed ...
+   'Provided' => string '10.67' (length=6)
+   'Used' => 
+     array (size=1)
+       'Provided' => string '10.67' (length=6)*/
+
+````
 
 #### Change the path of the file
 If you have to change the path of the file, you can proceed as described bellow :
 
-    $metadataHelper->setFilePath("data/images/photo2.jpg");
+````php
+<?php
+
+$metadataHelper->setFilePath("data/images/photo2.jpg");
+````
 
 ### Notion of Taskers
 
@@ -64,46 +131,49 @@ The **ReaderTasker** allow to read file's metadata. You can use 3 features which
         * **$excludedMetadata** ( default : null ) : Indicates metadata you won't to read. Can be a **String** or an **Array**.
     * return : array | null | string
     * examples :
-        * Read all metadata :
-    
+        * Read all metadata 
+        
+            ````php
+            <?php
+            
                 $metadataHelper->reader()->read();
                 
                 /* or the short way */
                 
                 $metadataHelper->read();
-                
+            ````
+      
         * Read all XMP Dublin Core metadata except the XMP Dublin Core subject :
         
-                $metadataHelper->reader()->read("XMP-dc:all", "XMP-dc:Subject");
+             ````php
+            <?php
+                        
+            $metadataHelper->reader()->read("XMP-dc:all", "XMP-dc:Subject");
                 
-                /* or the short way */
-                
-                $metadataHelper->read("XMP-dc:all", "XMP-dc:Subject");
-                
-                /* Result */
-                array (size=5)
-                  'SourceFile' => string 'data/images/photo1.jpg' (length=22)
-                  'Rights' => string 'CC-by-sa' (length=8)
-                  'Description' => string 'Western part of the abandoned Packard Automotive Plant in Detroit, Michigan.' (length=76)
-                  'Creator' => string 'Albert Duce' (length=11)
-                  'Title' => string 'Abandoned Packard Automobile Factory, Detroit' (length=45)
+            /* or the short way */
+            
+            $metadataHelper->read("XMP-dc:all", "XMP-dc:Subject");
+            
+            /* Result :
+            array (size=5)
+              'SourceFile' => string 'data/images/photo1.jpg' (length=22)
+              'Rights' => string 'CC-by-sa' (length=8)
+              'Description' => string 'Western part of the abandoned Packard Automotive Plant in Detroit, Michigan.' (length=76)
+              'Creator' => string 'Albert Duce' (length=11)
+              'Title' => string 'Abandoned Packard Automobile Factory, Detroit' (length=45)*/
          
          * Read all metadata except XMP Photoshop and XMP Rights metadata :
          
-                $metadataHelper->reader()->read("all", ["XMP-photoshop:all", "XMP-xmpRights:all"]);
+            ````php
+             <?php
+                                   
+            $metadataHelper->reader()->read("all", ["XMP-photoshop:all", "XMP-xmpRights:all"]);
                 
-                 /* or the short way */
+            /* or the short way */
                 
-                $metadataHelper->read("all", ["XMP-photoshop:all", "XMP-xmpRights:all"]);
-                
-                
-                
-                
-                
-                
-                
-                
-                
+            $metadataHelper->read("all", ["XMP-photoshop:all", "XMP-xmpRights:all"]);
+            ````
+ 
 * **readByGroup** ($selectedMetadata, $num, $excludedMetadata) :
     * description : Allow to read all or some file's metadata with the group option -g[$num...] which organize output by tag group.
     * params :
@@ -114,35 +184,38 @@ The **ReaderTasker** allow to read file's metadata. You can use 3 features which
     * examples :
         * Read all metadata with the group level 1 :
         
-                $metadataHelper->reader()->readByGroup("all", 1);
+            ````php
+            <?php
+            
+            $metadataHelper->reader()->readByGroup("all", 1);
                 
-                /* or the short way */
+            /* or the short way */
                 
-                $metadataHelper->readByGroup("all", 1);
-                    
+            $metadataHelper->readByGroup("all", 1);
+            ````
+  
         * Read all XMP Dublin Core metadata except the XMP Dublin Core subject with the group level 1 :
             
-                $metadataHelper->reader()->readByGroup("XMP-dc:all", 1, "XMP-dc:Subject");
-                
-                /* or the short way */
-                
-                $metadataHelper->readByGroup("XMP-dc:all", 1, "XMP-dc:Subject");
-                
-                /* Result */
-                array (size=2)
-                  'SourceFile' => string 'data/images/photo1.jpg' (length=22)
-                  'XMP-dc' => 
-                    array (size=4)
-                      'Rights' => string 'CC-by-sa' (length=8)
-                      'Description' => string 'Western part of the abandoned Packard Automotive Plant in Detroit, Michigan.' (length=76)
-                      'Creator' => string 'Albert Duce' (length=11)
-                      'Title' => string 'Abandoned Packard Automobile Factory, Detroit' (length=45)
-             
-    
-    
-    
-    
-    
+            ````php
+            <?php
+            
+            $metadataHelper->reader()->readByGroup("XMP-dc:all", 1, "XMP-dc:Subject");
+            
+            /* or the short way */
+            
+            $metadataHelper->readByGroup("XMP-dc:all", 1, "XMP-dc:Subject");
+            
+            /* Result :
+            
+            array (size=2)
+              'SourceFile' => string 'data/images/photo1.jpg' (length=22)
+              'XMP-dc' => 
+                array (size=4)
+                  'Rights' => string 'CC-by-sa' (length=8)
+                  'Description' => string 'Western part of the abandoned Packard Automotive Plant in Detroit, Michigan.' (length=76)
+                  'Creator' => string 'Albert Duce' (length=11)
+                  'Title' => string 'Abandoned Packard Automobile Factory, Detroit' (length=45) */
+            ````
     
     
 * **readWithPrefix** ($selectedMetadata, $num, $excludedMetadata) :
@@ -153,30 +226,39 @@ The **ReaderTasker** allow to read file's metadata. You can use 3 features which
         * **$excludedMetadata** ( default : null ) : Indicates metadata you won't to read. Can be a **String** or an **Array**.
      * return : array | null | string
      * examples :
+     
          * Read all metadata :
          
-                 $metadataHelper->reader()->readWithPrefix();
-                 
-                 /* or the short way */
-                 
-                 $metadataHelper->readWithPrefix();
+            ````php
+            <?php
+            
+             $metadataHelper->reader()->readWithPrefix();
+             
+             /* or the short way */
+             
+             $metadataHelper->readWithPrefix();
+            ````
                      
          * Read all XMP Dublin Core metadata except the XMP Dublin Core subject with the group level 1:
              
-                 $metadataHelper->reader()->readWithPrefix("XMP-dc:all", 1, "XMP-dc:Subject");
-                 
-                 /* or the short way */
-                 
-                 $metadataHelper->readWithPrefix("XMP-dc:all", 1, "XMP-dc:Subject");
-                 
-                 /* Result */
-                 array (size=5)
-                   'SourceFile' => string 'data/images/photo1.jpg' (length=22)
-                   'XMP-dc:Rights' => string 'CC-by-sa' (length=8)
-                   'XMP-dc:Description' => string 'Western part of the abandoned Packard Automotive Plant in Detroit, Michigan.' (length=76)
-                   'XMP-dc:Creator' => string 'Albert Duce' (length=11)
-                   'XMP-dc:Title' => string 'Abandoned Packard Automobile Factory, Detroit' (length=45)
-                 
+             ````php
+             <?php
+            
+             $metadataHelper->reader()->readWithPrefix("XMP-dc:all", 1, "XMP-dc:Subject");
+             
+             /* or the short way */
+             
+             $metadataHelper->readWithPrefix("XMP-dc:all", 1, "XMP-dc:Subject");
+             
+             /* Result :
+            
+             array (size=5)
+               'SourceFile' => string 'data/images/photo1.jpg' (length=22)
+               'XMP-dc:Rights' => string 'CC-by-sa' (length=8)
+               'XMP-dc:Description' => string 'Western part of the abandoned Packard Automotive Plant in Detroit, Michigan.' (length=76)
+               'XMP-dc:Creator' => string 'Albert Duce' (length=11)
+               'XMP-dc:Title' => string 'Abandoned Packard Automobile Factory, Detroit' (length=45)*/
+             ````
     
 ### WriterTasker
 
@@ -192,29 +274,39 @@ The WriterTasker allow to add metadata to a file or to edit file's metadata. You
     * examples :
         * Write some XMP Dublin Core metadata :
     
-                $metadataHelper->writer()->write(["XMP-dc:Ttile" => "Blue Bird", "XMP-dc:Description" => "My song of the year"]);
-                
-                /* or the short way */
-                
-                $metadataHelper->write(["XMP-dc:Ttile" => "Blue Bird", "XMP-dc:Description" => "My song of the year"]);
-                
-                /* Result */
-                array (size=2)
-                  'exiftoolMessage' => string '1 image files updated' (length=21)
-                  'success' => boolean true
+            ````php
+            <?php
+            
+            $metadataHelper->writer()->write(["XMP-dc:Ttile" => "Blue Bird", "XMP-dc:Description" => "My song of the year"]);
+            
+            /* or the short way */
+            
+            $metadataHelper->write(["XMP-dc:Ttile" => "Blue Bird", "XMP-dc:Description" => "My song of the year"]);
+            
+            /* Result :
+            
+            array (size=2)
+              'exiftoolMessage' => string '1 image files updated' (length=21)
+              'success' => boolean true*/
+            ````
                 
         * Write XMP Dublin Core title only if it does not already exists :
         
-                $metadataHelper->writer()->write(["XMP-dc:Title" => "First Title"], false);
-                
-                /* or the short way */
-                
-                $metadataHelper->write(["XMP-dc:Title" => "First Title"], false);
-                
-                /* Result */
-                array (size=2)
-                  'exiftoolMessage' => string '1 image files updated' (length=21)
-                  'success' => boolean true
+            ````php
+            <?php
+            
+            $metadataHelper->writer()->write(["XMP-dc:Title" => "First Title"], false);
+            
+            /* or the short way */
+            
+            $metadataHelper->write(["XMP-dc:Title" => "First Title"], false);
+            
+            /* Result :
+            
+            array (size=2)
+              'exiftoolMessage' => string '1 image files updated' (length=21)
+              'success' => boolean true */
+            ````
                   
                   
 * **writeFromJsonFile** ($jsonFilePath, $replace, $overwrite) :
@@ -228,24 +320,30 @@ The WriterTasker allow to add metadata to a file or to edit file's metadata. You
     * examples :
         * Write metadata from json file :
     
-                $metadataHelper->writer()->writeFromJsonFile("../path/to/data.json");
-                
-                /* or the short way */
-                
-                $metadataHelper->writeFromJsonFile("../path/to/data.json");
-                
-                /* data.json */
-                [{"SourceFile": "data/images/photo1.jpg",   /* <-- same value as $filePath */
-                  "XMP-dc:Title": "Le titre de mon image",
-                  "XMP-dc:Rights": "CC-by-nc-sa",
-                  "XMP-dc:Description": "This is a test",
-                  "XMP-dc:Description-en-EN": "This is a test"
-                }]
-                
-                /* Result */
-                array (size=2)
-                  'exiftoolMessage' => string '1 image files updated' (length=21)
-                  'success' => boolean true
+            ````php
+            <?php
+            
+            $metadataHelper->writer()->writeFromJsonFile("../path/to/data.json");
+            
+            /* or the short way */
+            
+            $metadataHelper->writeFromJsonFile("../path/to/data.json");
+            
+            /* data.json :
+            
+            [{"SourceFile": "data/images/photo1.jpg",    <-- same value as $filePath
+              "XMP-dc:Title": "Le titre de mon image",
+              "XMP-dc:Rights": "CC-by-nc-sa",
+              "XMP-dc:Description": "This is a test",
+              "XMP-dc:Description-en-EN": "This is a test"
+            }] */
+            
+            /* Result :
+            
+            array (size=2)
+              'exiftoolMessage' => string '1 image files updated' (length=21)
+              'success' => boolean true */
+            ````
            
 * **writeFromJson** ($json, $replace, $overwrite) :
     * description : Same as write feature but from a json string.
@@ -258,30 +356,35 @@ The WriterTasker allow to add metadata to a file or to edit file's metadata. You
     * examples :
         * Write metadata from json file :
     
-                $metadataHelper->writer()->writeFromJson("
-                      [{"SourceFile": "data/images/photo1.jpg",
-                      "XMP-dc:Title": "Le titre de mon image",
-                      "XMP-dc:Rights": "CC-by-nc-sa",
-                      "XMP-dc:Description": "This is a test",
-                      "XMP-dc:Description-en-EN": "This is a test"
-                      }]
-                ");
-                
-                /* or the short way */
-                
-                 $metadataHelper->writeFromJson("
-                                      [{"SourceFile": "data/images/photo1.jpg",
-                                      "XMP-dc:Title": "Le titre de mon image",
-                                      "XMP-dc:Rights": "CC-by-nc-sa",
-                                      "XMP-dc:Description": "This is a test",
-                                      "XMP-dc:Description-en-EN": "This is a test"
-                                      }]
-                                ");
-                
-                /* Result */
-                array (size=2)
-                  'exiftoolMessage' => string '1 image files updated' (length=21)
-                  'success' => boolean true     
+            ````php
+            <?php
+            
+            $metadataHelper->writer()->writeFromJson('
+                  [{"SourceFile": "data/images/photo1.jpg",
+                  "XMP-dc:Title": "Le titre de mon image",
+                  "XMP-dc:Rights": "CC-by-nc-sa",
+                  "XMP-dc:Description": "This is a test",
+                  "XMP-dc:Description-en-EN": "This is a test"
+                  }]
+            ');
+            
+            /* or the short way */
+            
+             $metadataHelper->writeFromJson('
+                                  [{"SourceFile": "data/images/photo1.jpg",
+                                  "XMP-dc:Title": "Le titre de mon image",
+                                  "XMP-dc:Rights": "CC-by-nc-sa",
+                                  "XMP-dc:Description": "This is a test",
+                                  "XMP-dc:Description-en-EN": "This is a test"
+                                  }]
+                            ');
+            
+            /* Result :
+            
+            array (size=2)
+              'exiftoolMessage' => string '1 image files updated' (length=21)
+              'success' => boolean true     */
+            ````
 
 ### EraserTasker
 
@@ -297,29 +400,39 @@ The EraserTasker allow to remove file's metadata. Only one feature is available 
     * examples :
         * Remove all metadata :
     
-                $metadataHelper->eraser()->remove();
-                
-                /* or the short way */
-                
-                $metadataHelper->remove();
-                
-                /* Result */
-                array (size=2)
-                  'exiftoolMessage' => string '1 image files updated' (length=21)
-                  'success' => boolean true
+            ````php
+            <?php
+            
+            $metadataHelper->eraser()->remove();
+            
+            /* or the short way */
+            
+            $metadataHelper->remove();
+            
+            /* Result :
+            
+            array (size=2)
+              'exiftoolMessage' => string '1 image files updated' (length=21)
+              'success' => boolean true */
+            ````
                 
         * Remove all XMP Dublin Core metadata except the XMP Dublin Core title :
         
-                $metadataHelper->eraser()->remove("XMP-dc:all", "XMP-dc:Title");
-                
-                /* or the short way */
-                
-                $metadataHelper->remove("XMP-dc:all", "XMP-dc:Title");
-                
-                /* Result */
-                array (size=2)
-                  'exiftoolMessage' => string '1 image files updated' (length=21)
-                  'success' => boolean true
+            ````php
+            <?php
+            
+            $metadataHelper->eraser()->remove("XMP-dc:all", "XMP-dc:Title");
+            
+            /* or the short way */
+            
+            $metadataHelper->remove("XMP-dc:all", "XMP-dc:Title");
+            
+            /* Result :
+            
+            array (size=2)
+              'exiftoolMessage' => string '1 image files updated' (length=21)
+              'success' => boolean true */
+            ````
 
 ## UML
 
