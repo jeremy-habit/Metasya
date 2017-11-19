@@ -1,6 +1,8 @@
 # Metasya ( PHP-Metadata-Manager )
 Library allowing the management of embarked metadatas on diverse types of files, to manage the import of metadatas in an information system and the synchronization of the data between the information system and files with exiftool.
 
+What is **Exiftool** ? Take a look here : [https://www.sno.phy.queensu.ca/~phil/exiftool/](https://www.sno.phy.queensu.ca/~phil/exiftool/)
+
 ## Install
 
 1. You have to use [Composer](https://getcomposer.org/), a tool for dependency management in PHP :
@@ -82,8 +84,8 @@ echo $metadataHelper->getLocalExiftoolVersion();
 /* Get the version of the provided exiftool by Metasya */
 echo $metadataHelper->getProvidedExiftoolVersion();
 
-/* Return an array which indicates if Metasya used the local or the provided exiftool and the version of the used exiftool */
-echo $metadataHelper->getUsedExiftoolVersion();
+/* Return an array which indicates if Metasya uses the local or the provided exiftool and the version of the used exiftool */
+var_dump($metadataHelper->getUsedExiftoolVersion());
 
 /* example : 
 array (size=1)
@@ -116,8 +118,6 @@ $metadataHelper->setFilePath("data/images/photo2.jpg");
 ### Notion of Taskers
 
 The **MetadataHelper** object has several **Taskers**. Each **Tasker** bring features thanks the use of exiftool.
-
-What is **Exiftool** ? Take a look here : https://www.sno.phy.queensu.ca/~phil/exiftool/
 
 
 ### ReaderTasker
@@ -155,6 +155,7 @@ The **ReaderTasker** allow to read file's metadata. You can use 3 features which
             $metadataHelper->read("XMP-dc:all", "XMP-dc:Subject");
             
             /* Result :
+            
             array (size=5)
               'SourceFile' => string 'data/images/photo1.jpg' (length=22)
               'Rights' => string 'CC-by-sa' (length=8)
@@ -165,7 +166,7 @@ The **ReaderTasker** allow to read file's metadata. You can use 3 features which
          * Read all metadata except XMP Photoshop and XMP Rights metadata :
          
             ````php
-             <?php
+            <?php
                                    
             $metadataHelper->reader()->read("all", ["XMP-photoshop:all", "XMP-xmpRights:all"]);
                 
