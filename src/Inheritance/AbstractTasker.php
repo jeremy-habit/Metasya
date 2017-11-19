@@ -10,19 +10,35 @@ use Exception;
  */
 abstract class AbstractTasker
 {
+
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+  /* ### ATTRIBUTES & CONSTRUCTORS ### */
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+
   /**
    * @var string $filePath
    */
   protected $filePath;
 
   /**
+   * @var string $exiftoolPath
+   */
+  protected $exiftoolPath;
+
+
+  /**
    * AbstractTasker constructor.
    * @param $filePath
    */
-  public function __construct($filePath)
+  public function __construct($filePath, $exiftoolPath)
   {
     $this->filePath = $filePath;
+    $this->exiftoolPath = $exiftoolPath;
   }
+
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+  /* ### FUNCTIONS ### */
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
   /**
    * Execute a stringified command with exiftool and return its result.
@@ -32,10 +48,10 @@ abstract class AbstractTasker
    */
   protected function execute($stringifiedCmd, $jsonOutput = false)
   {
-    /*return $this->trim_Multiple_Whitespaces("exiftool " . (($jsonOutput) ? "-json " : null) . $stringifiedCmd . " " . $this->filePath);*/
     try {
       if (file_exists($this->filePath)) {
-        $cmdResult = shell_exec($this->trim_Multiple_Whitespaces("exiftool " . (($jsonOutput) ? "-json " : null) . $stringifiedCmd . " " . $this->filePath));
+        $cmd = $this->trim_Multiple_Whitespaces($this->exiftoolPath . "exiftool " . (($jsonOutput) ? "-json " : null) . $stringifiedCmd . " " . $this->filePath);
+        $cmdResult = shell_exec(escapeshellcmd($cmd));
         if ($cmdResult == null) {
           if (!$jsonOutput) {
             return ['exiftoolMessage' => trim($cmdResult), 'success' => false];
@@ -65,7 +81,7 @@ abstract class AbstractTasker
    * @param $text
    * @return mixed
    */
-  private function trim_Multiple_Whitespaces($text)
+  protected function trim_Multiple_Whitespaces($text)
   {
     return trim(preg_replace("/ {2,}/", " ", $text));
   }

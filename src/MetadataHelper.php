@@ -12,10 +12,26 @@ use MagicMonkey\Metasya\Tasker\EraserTasker;
 class MetadataHelper
 {
 
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+  /* ### CONSTANTS ### */
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+
+  const DS = DIRECTORY_SEPARATOR;
+  const EXIFTOOL_PATH = "vendor" . self::DS . "magicmonkey" . self::DS . "metasya" . self::DS . "exiftool" . self::DS;
+
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+  /* ### ATTRIBUTES & CONSTRUCTORS ### */
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+
   /**
    * @var string $filePath
    */
   private $filePath;
+
+  /**
+   * @var boolean $useProvidedExiftool
+   */
+  private $useProvidedExiftool;
 
   /**
    * @var ReaderTasker $reader
@@ -32,16 +48,22 @@ class MetadataHelper
    */
   private $eraser;
 
-
   /**
    * MetadataHelper constructor.
-   * @param $filePath
+   * @param string $filePath
+   * @param bool $useProvidedExiftool
    */
-  public function __construct($filePath)
+  public function __construct($filePath, $useProvidedExiftool = true)
   {
     $this->filePath = $filePath;
+    $this->useProvidedExiftool = $useProvidedExiftool;
     $this->initialize_Taskers();
   }
+
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+  /* ### PRIVATE FUNCTIONS ### */
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+
 
   /**
    * Initialize taskers with the $filePath.
@@ -52,18 +74,85 @@ class MetadataHelper
     unset($this->reader);
     unset($this->writer);
     unset($this->eraser);
-    $this->reader = new ReaderTasker($this->filePath);
-    $this->writer = new WriterTasker($this->filePath, $this->reader);
-    $this->eraser = new EraserTasker($this->filePath);
+    $exiftoolPath = ($this->useProvidedExiftool) ? self::EXIFTOOL_PATH : "";
+    $this->reader = new ReaderTasker($this->filePath, $exiftoolPath);
+    $this->writer = new WriterTasker($this->filePath, $exiftoolPath);
+    $this->eraser = new EraserTasker($this->filePath, $exiftoolPath);
   }
 
+  /**
+   * Return the version of exiftool (provided version or user version)
+   * @param bool $providedExiftoolVersion
+   * @return string
+   */
+  private function get_Exiftool_Version($providedExiftoolVersion = true)
+  {
+    $cmd = ($providedExiftoolVersion) ? self::EXIFTOOL_PATH . "exiftool -ver" : "exiftool -ver";
+    return shell_exec(escapeshellcmd($cmd));
+  }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### PUBLIC FUNCTIONS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
+  /* Version */
+
+  /**
+   * Return the user exiftool version
+   * @return string
+   */
+  public function getUserExiftoolVersion()
+  {
+    return $this->get_Exiftool_Version(false);
+  }
+
+  /**
+   * Return the provided exiftool version
+   * @return string
+   */
+  public function getProvidedExiftoolVersion()
+  {
+    return $this->get_Exiftool_Version();
+  }
+
+  /**
+   * Return the used exiftool version
+   * @return array
+   */
+  public function getUsedExiftoolVersion()
+  {
+    return [
+      ($this->useProvidedExiftool) ? "Provided" : "User" => $this->get_Exiftool_Version($this->useProvidedExiftool)
+    ];
+  }
+
+  /**
+   * Return an array containing the user, the provided and the used exiftool version
+   * @return array
+   */
+  public function getExiftoolVersionsInfo()
+  {
+    $versionsInfo = [
+      "User" => $this->getUserExiftoolVersion(),
+      "Provided" => $this->getProvidedExiftoolVersion(),
+      "Used" => $this->getUsedExiftoolVersion()
+    ];
+    return $versionsInfo;
+  }
+
+
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+  /* ### TASKERS FUNCTIONS ### */
+  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+
   /* EraserTasker */
 
+  /**
+   * @param string $targetedMetadata
+   * @param null $excludedMetadata
+   * @param bool $overwrite
+   * @return array|null|string
+   */
   public function remove($targetedMetadata = "all", $excludedMetadata = null, $overwrite = true)
   {
     return $this->eraser->remove($targetedMetadata, $excludedMetadata, $overwrite);
@@ -71,16 +160,33 @@ class MetadataHelper
 
   /* ReaderTasker */
 
+  /**
+   * @param string $selectedMetadata
+   * @param null $excludedMetadata
+   * @return array|null|string
+   */
   public function read($selectedMetadata = "all", $excludedMetadata = null)
   {
     return $this->reader->read($selectedMetadata, $excludedMetadata);
   }
 
+  /**
+   * @param string $selectedMetadata
+   * @param int $num
+   * @param null $excludedMetadata
+   * @return array|null|string
+   */
   public function readWithPrefix($selectedMetadata = "all", $num = 0, $excludedMetadata = null)
   {
     return $this->reader->readWithPrefix($selectedMetadata, $num, $excludedMetadata);
   }
 
+  /**
+   * @param string $selectedMetadata
+   * @param int $num
+   * @param null $excludedMetadata
+   * @return array|null|string
+   */
   public function readByGroup($selectedMetadata = "all", $num = 0, $excludedMetadata = null)
   {
     return $this->reader()->readByGroup($selectedMetadata, $num, $excludedMetadata);
@@ -88,16 +194,34 @@ class MetadataHelper
 
   /* WriterTasker */
 
+  /**
+   * @param null $targetedMetadata
+   * @param bool $replace
+   * @param bool $overwrite
+   * @return array|bool|null|string
+   */
   public function write($targetedMetadata = null, $replace = true, $overwrite = true)
   {
     return $this->writer->write($targetedMetadata, $replace, $overwrite);
   }
 
+  /**
+   * @param null $jsonFilePath
+   * @param bool $replace
+   * @param bool $overwrite
+   * @return array|bool|null|string
+   */
   public function writeFromJsonFile($jsonFilePath = null, $replace = true, $overwrite = true)
   {
     return $this->writer->writeFromJsonFile($jsonFilePath, $replace, $overwrite);
   }
 
+  /**
+   * @param $json
+   * @param bool $replace
+   * @param bool $overwrite
+   * @return array|bool|null|string
+   */
   public function writeFromJson($json, $replace = true, $overwrite = true)
   {
     return $this->writer->writeFromJson($json, $replace, $overwrite);
@@ -145,8 +269,20 @@ class MetadataHelper
   public function setFilePath($filePath)
   {
     $this->filePath = $filePath;
-    $this->initialize_Taskers();
+    if ($this->filePath != $filePath) {
+      $this->initialize_Taskers();
+    }
   }
 
+  /**
+   * @param bool $useProvidedExiftool
+   */
+  public function setUseProvidedExiftool(bool $useProvidedExiftool)
+  {
+    $this->useProvidedExiftool = $useProvidedExiftool;
+    if ($this->useProvidedExiftool != $useProvidedExiftool) {
+      $this->initialize_Taskers();
+    }
+  }
 
 }

@@ -8,4 +8,7 @@ Autoloader::register();
 /* ### MAIN */
 
 $metadataHelper = new MetadataHelper("data/images/photo1.jpg");
-var_dump($metadataHelper->read("XMP-dc:all"));
+
+var_dump($metadataHelper->getExiftoolVersionsInfo());
+
+var_dump($metadataHelper->read());

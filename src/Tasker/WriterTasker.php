@@ -11,21 +11,6 @@ use MagicMonkey\Metasya\Inheritance\AbstractTasker;
 class WriterTasker extends AbstractTasker
 {
 
-  /**
-   * @var ReaderTasker $reader
-   */
-  private $reader;
-
-  /**
-   * WriterTasker constructor.
-   * @param $reader
-   */
-  public function __construct($filePath, $reader)
-  {
-    parent::__construct($filePath);
-    $this->reader = $reader;
-  }
-
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### PRIVATE FUNCTIONS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
@@ -36,8 +21,9 @@ class WriterTasker extends AbstractTasker
   private function untarget_Existing_Metadata($targetedMetadata)
   {
     $newTargetedMetadata = $targetedMetadata;
+    $reader = new ReaderTasker($this->filePath, $this->exiftoolPath);
     foreach ($targetedMetadata as $metadataTag => $metadaValue) {
-      if (array_key_exists(strtolower($metadataTag), array_change_key_case($this->reader->read(), CASE_LOWER))) {
+      if (array_key_exists(strtolower($metadataTag), array_change_key_case($reader->read(), CASE_LOWER))) {
         unset($newTargetedMetadata[$metadataTag]);
       }
     }
