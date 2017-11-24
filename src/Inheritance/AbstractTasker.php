@@ -34,6 +34,18 @@ abstract class AbstractTasker
   {
     $this->filePath = $filePath;
     $this->exiftoolPath = $exiftoolPath;
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+      $this->exiftoolPath .= "windows" . DS;
+    } else {
+      $this->exiftoolPath .= "linux" . DS . ".\/";
+    }
+
+/*
+    switch (PHP_OS) {
+      case "linux":
+        $this->exiftoolPath .= "linux" . DS . ".\/";
+        break;
+    }*/
   }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
