@@ -74,10 +74,20 @@ class MetadataHelper
     unset($this->reader);
     unset($this->writer);
     unset($this->eraser);
-    $exiftoolPath = ($this->useProvidedExiftool) ? self::EXIFTOOL_PATH : "";
+    $exiftoolPath = ($this->useProvidedExiftool) ? self::EXIFTOOL_PATH . $this->determine_OS() : "";
     $this->reader = new ReaderTasker($this->filePath, $exiftoolPath);
     $this->writer = new WriterTasker($this->filePath, $exiftoolPath);
     $this->eraser = new EraserTasker($this->filePath, $exiftoolPath);
+  }
+
+
+  private function determine_OS()
+  {
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+      return "windows" . self::DS;
+    }
+    return "linux" . self::DS . ".\/";
+
   }
 
   /**
