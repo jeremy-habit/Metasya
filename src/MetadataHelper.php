@@ -74,19 +74,33 @@ class MetadataHelper
     unset($this->reader);
     unset($this->writer);
     unset($this->eraser);
-    $exiftoolPath = ($this->useProvidedExiftool) ? self::EXIFTOOL_PATH . $this->determine_OS() : "";
+    $exiftoolPath = ($this->useProvidedExiftool) ? $this->generate_Full_Exiftool_Path() : "";
     $this->reader = new ReaderTasker($this->filePath, $exiftoolPath);
     $this->writer = new WriterTasker($this->filePath, $exiftoolPath);
     $this->eraser = new EraserTasker($this->filePath, $exiftoolPath);
   }
 
+  /**
+   * Concatenates the EXIFTOOL_PATH const with the result of the function determine_OS in order generate the path to exiftool exe
+   * @return string
+   */
+  private function generate_Full_Exiftool_Path()
+  {
+    return self::EXIFTOOL_PATH . $this->determines_OS() . self::DS;
+  }
 
-  private function determine_OS()
+
+  /**
+   * TODO Manage the MAC OS !
+   * Determines the operating system (windows and linux only at this moment)
+   * @return string
+   */
+  private function determines_OS()
   {
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-      return "windows" . self::DS;
+      return "windows";
     }
-    return "linux" . self::DS;
+    return "linux";
 
   }
 
@@ -97,7 +111,7 @@ class MetadataHelper
    */
   private function get_Exiftool_Version($providedExiftoolVersion = true)
   {
-    $cmd = ($providedExiftoolVersion) ? self::EXIFTOOL_PATH . "exiftool -ver" : "exiftool -ver";
+    $cmd = ($providedExiftoolVersion) ? $this->generate_Full_Exiftool_Path() . "exiftool -ver" : "exiftool -ver";
     return shell_exec(escapeshellcmd($cmd));
   }
 
