@@ -283,9 +283,9 @@ class MetadataHelper
   }
 
   /**
-   * @param bool $useProvidedExiftool
+   * @param boolean $useProvidedExiftool
    */
-  public function setUseProvidedExiftool(bool $useProvidedExiftool)
+  public function setUseProvidedExiftool($useProvidedExiftool)
   {
     $this->useProvidedExiftool = $useProvidedExiftool;
     $this->initialize_Taskers();
