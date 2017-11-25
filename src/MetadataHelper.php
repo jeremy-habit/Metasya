@@ -86,7 +86,7 @@ class MetadataHelper
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
       return "windows" . self::DS;
     }
-    return "linux" . self::DS . ".\/";
+    return "linux" . self::DS;
 
   }
 
@@ -279,9 +279,7 @@ class MetadataHelper
   public function setFilePath($filePath)
   {
     $this->filePath = $filePath;
-    if ($this->filePath != $filePath) {
-      $this->initialize_Taskers();
-    }
+    $this->initialize_Taskers();
   }
 
   /**
@@ -290,9 +288,7 @@ class MetadataHelper
   public function setUseProvidedExiftool(bool $useProvidedExiftool)
   {
     $this->useProvidedExiftool = $useProvidedExiftool;
-    if ($this->useProvidedExiftool != $useProvidedExiftool) {
-      $this->initialize_Taskers();
-    }
+    $this->initialize_Taskers();
   }
 
 }
