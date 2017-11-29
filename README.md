@@ -18,8 +18,14 @@ What is **Exiftool** ? Take a look here : [https://www.sno.phy.queensu.ca/~phil/
     ````bash
     composer dumpautoload -o
     ````
+    
+3. With operating system based on UNIX, the provided version of Exiftool by Metasya at least must have the execute permission for the owner.
 
-3. You can write in a file like index.php a code that tests if Metasya that you have just downloaded really works :
+    ````bash
+    chmod 500 vendor/magicmonkey/metasya/exiftool/unix/exiftool
+    ````
+
+4. You can write in a file like index.php a code that tests if Metasya that you have just downloaded really works :
 
     ````php
     <?php
@@ -114,6 +120,18 @@ If you have to change the path of the file, you can proceed as described bellow 
 
 $metadataHelper->setFilePath("data/images/photo2.jpg");
 ````
+
+#### Execute his own exiftool command line
+
+The next part is about taskers which allow you to manage files metadata thanks predefined commands. However, you can use
+the function "execute" in order to do specifically what you really want.
+
+````php
+<?php
+
+/* Print all meta information in an image, including duplicate and unknown tags, sorted by group (for family 1). */
+$metadataHelper->execute("-a -u -g1 image.jpg");
+```` 
 
 ### Notion of Taskers
 

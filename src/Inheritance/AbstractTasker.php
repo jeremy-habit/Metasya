@@ -50,8 +50,8 @@ abstract class AbstractTasker
   {
     try {
       if (file_exists($this->filePath)) {
-        $cmd = $this->trim_Multiple_Whitespaces($this->exiftoolPath . "exiftool " . (($jsonOutput) ? "-json " : null) . $stringifiedCmd . " " . $this->filePath);
-        $cmdResult = shell_exec(escapeshellcmd($cmd));
+        $cmd = $this->trimMultipleWhitespaces($this->exiftoolPath . "exiftool " . (($jsonOutput) ? "-json " : null) . $stringifiedCmd . " " . $this->filePath . " 2>&1");
+        $cmdResult = shell_exec($cmd);
         if ($cmdResult == null) {
           if (!$jsonOutput) {
             return ['exiftoolMessage' => trim($cmdResult), 'success' => false];
@@ -60,7 +60,7 @@ abstract class AbstractTasker
           }
         } else {
           if ($this->isJson($cmdResult)) {
-            return $this->convert_Object_To_Array(json_decode($cmdResult)[0]);
+            return $this->convertObjectToArray(json_decode($cmdResult)[0]);
           } else {
             return ['exiftoolMessage' => trim($cmdResult), 'success' => true];
           }
@@ -81,7 +81,7 @@ abstract class AbstractTasker
    * @param $text
    * @return mixed
    */
-  protected function trim_Multiple_Whitespaces($text)
+  protected function trimMultipleWhitespaces($text)
   {
     return trim(preg_replace("/ {2,}/", " ", $text));
   }
@@ -116,13 +116,13 @@ abstract class AbstractTasker
    * @param $obj object
    * @return array
    */
-  protected function convert_Object_To_Array($obj)
+  protected function convertObjectToArray($obj)
   {
     if (is_object($obj)) $obj = (array)$obj;
     if (is_array($obj)) {
       $newArray = [];
       foreach ($obj as $key => $value) {
-        $newArray[$key] = $this->convert_Object_To_Array($value);
+        $newArray[$key] = $this->convertObjectToArray($value);
       }
     } else $newArray = $obj;
     return $newArray;

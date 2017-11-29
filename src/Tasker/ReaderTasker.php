@@ -3,6 +3,7 @@
 namespace MagicMonkey\Metasya\Tasker;
 
 use MagicMonkey\Metasya\Inheritance\AbstractTasker;
+use MagicMonkey\Metasya\Schema\Schema;
 
 /**
  * Class ReaderTasker
@@ -23,6 +24,17 @@ class ReaderTasker extends AbstractTasker
    */
   private function stringify_Targeted_Metadata($targetedMetadata, $exclusion = false)
   {
+    /* test if it's an instance of Schema */
+   /* if ($targetedMetadata instanceof Schema) {
+      $targetedMetadata = $targetedMetadata->buildTargetedMetadata();
+    }*/
+
+    /* test if it's a Schema's shortcut */
+ /*   if ($targetedMetadata) {
+
+    }*/
+
+
     $stringifiedTargetedMetadata = "";
     $prefix = "-";
     if ($exclusion) {

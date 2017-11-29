@@ -115,7 +115,7 @@ class WriterTasker extends AbstractTasker
   public function writeFromJson($json, $replace = true, $overwrite = true)
   {
     if ($this->isJson($json)) {
-      return $this->write($this->convert_Object_To_Array(json_decode($json)[0]), $replace, $overwrite);
+      return $this->write($this->convertObjectToArray(json_decode($json)[0]), $replace, $overwrite);
     }
     return false;
   }

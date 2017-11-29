@@ -2,6 +2,8 @@
 
 namespace MagicMonkey\Metasya;
 
+use Exception;
+use MagicMonkey\Metasya\Schema\Schema;
 use MagicMonkey\Metasya\Tasker\ReaderTasker;
 use MagicMonkey\Metasya\Tasker\WriterTasker;
 use MagicMonkey\Metasya\Tasker\EraserTasker;
@@ -16,37 +18,25 @@ class MetadataHelper
   /* ### CONSTANTS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
+  /**
+   *
+   */
   const DS = DIRECTORY_SEPARATOR;
+  /**
+   *
+   */
   const EXIFTOOL_PATH = "vendor" . self::DS . "magicmonkey" . self::DS . "metasya" . self::DS . "exiftool" . self::DS;
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### ATTRIBUTES & CONSTRUCTORS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
-  /**
-   * @var string $filePath
-   */
-  private $filePath;
+  private $stateHelper;
 
   /**
    * @var boolean $useProvidedExiftool
    */
   private $useProvidedExiftool;
-
-  /**
-   * @var ReaderTasker $reader
-   */
-  private $reader;
-
-  /**
-   * @var WriterTasker $writer
-   */
-  private $writer;
-
-  /**
-   * @var EraserTasker $eraser
-   */
-  private $eraser;
 
   /**
    * MetadataHelper constructor.
@@ -57,13 +47,13 @@ class MetadataHelper
   {
     $this->filePath = $filePath;
     $this->useProvidedExiftool = $useProvidedExiftool;
+    $this->schemas = array();
     $this->initialize_Taskers();
   }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### PRIVATE FUNCTIONS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-
 
   /**
    * Initialize taskers with the $filePath.
@@ -89,10 +79,8 @@ class MetadataHelper
     return self::EXIFTOOL_PATH . $this->determines_OS() . self::DS;
   }
 
-
   /**
-   * TODO Manage the MAC OS !
-   * Determines the operating system (windows and linux only at this moment)
+   * Determines the operating system (windows or unix)
    * @return string
    */
   private function determines_OS()
@@ -100,7 +88,7 @@ class MetadataHelper
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
       return "windows";
     }
-    return "linux";
+    return "unix";
 
   }
 
@@ -111,15 +99,19 @@ class MetadataHelper
    */
   private function get_Exiftool_Version($providedExiftoolVersion = true)
   {
-    $cmd = ($providedExiftoolVersion) ? $this->generate_Full_Exiftool_Path() . "exiftool -ver" : "exiftool -ver";
-    return shell_exec(escapeshellcmd($cmd));
+    try {
+      $cmd = ($providedExiftoolVersion) ? $this->generate_Full_Exiftool_Path() . "exiftool -ver" : "exiftool -ver";
+      return shell_exec(escapeshellcmd($cmd));
+    } catch (Exception $exception) {
+      return $exception->getMessage();
+    }
   }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### PUBLIC FUNCTIONS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
-  /* Version */
+  /* -- Version Start -- */
 
   /**
    * Return the installed/local exiftool version
@@ -164,9 +156,69 @@ class MetadataHelper
     return $versionsInfo;
   }
 
+  /* -- Version End -- */
+
+  /* -- Schema Start -- */
+
+  /**
+   * @param $shortcut
+   * @param $nameSpace
+   * @param null $description
+   * @return Schema
+   */
+  public function createSchema($shortcut, $nameSpace, $description = null)
+  {
+    $newSchema = new Schema($shortcut, $nameSpace, $description);
+    return $newSchema;
+  }
+
+  /**
+   * @param $schema
+   * @return bool
+   */
+  public function addSchema($schema)
+  {
+    if ($schema instanceof Schema) {
+      array_push($this->schemas, $schema);
+      return true;
+    }
+    return false;
+  }
+
+
+  /**
+   * @param $schema
+   * @return bool
+   */
+  public function removeSchema($schema)
+  {
+    if (($key = array_search($schema, $this->schemas, true)) !== FALSE) {
+      unset($this->schemas[$key]);
+      return true;
+    }
+    return false;
+  }
+
+  /* -- Schema End -- */
+
+  /**
+   * Allows the user to execute any commands with the used exiftool version
+   * @param $stringifyCmd
+   * @return string
+   */
+  public function execute($stringifyCmd)
+  {
+    try {
+      $cmd = ($this->useProvidedExiftool) ? $this->generate_Full_Exiftool_Path() . "exiftool " . $stringifyCmd : "exiftool " . $stringifyCmd . " 2>&1";
+      return shell_exec($cmd);
+    } catch (Exception $exception) {
+      return $exception->getMessage();
+    }
+  }
+
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-  /* ### TASKERS FUNCTIONS ### */
+  /* ### TASKERS SHORTCUTS FUNCTIONS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
   /* EraserTasker */
@@ -304,5 +356,22 @@ class MetadataHelper
     $this->useProvidedExiftool = $useProvidedExiftool;
     $this->initialize_Taskers();
   }
+
+  /**
+   * @return mixed
+   */
+  public function getSchemas()
+  {
+    return $this->schemas;
+  }
+
+  /**
+   * @param mixed $schemas
+   */
+  public function setSchemas($schemas)
+  {
+    $this->schemas = $schemas;
+  }
+
 
 }
