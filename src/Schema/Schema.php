@@ -18,7 +18,7 @@ class Schema
   /**
    * @var null
    */
-  private $nameSpace;
+  private $namespace;
 
   /**
    * @var null
@@ -36,10 +36,10 @@ class Schema
    * @param $nameSpace
    * @param $description
    */
-  public function __construct($shortcut, $nameSpace, $description = null)
+  public function __construct($shortcut, $namespace, $description = null)
   {
     $this->shortcut = $shortcut;
-    $this->nameSpace = $nameSpace;
+    $this->namespace = $namespace;
     $this->description = $description;
     $this->properties = array();
   }
@@ -87,17 +87,17 @@ class Schema
   /**
    * @return null
    */
-  public function getNameSpace()
+  public function getNamespace()
   {
-    return $this->nameSpace;
+    return $this->namespace;
   }
 
   /**
    * @param null $nameSpace
    */
-  public function setNameSpace($nameSpace)
+  public function setNamespace($nameSpace)
   {
-    $this->nameSpace = $nameSpace;
+    $this->namespace = $nameSpace;
   }
 
   /**

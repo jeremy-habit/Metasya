@@ -3,6 +3,7 @@
 namespace MagicMonkey\Metasya\Inheritance;
 
 use MagicMonkey\Metasya\MetadataHelper;
+use MagicMonkey\Metasya\Schema\SchemataManager;
 
 /**
  * Class AbstractTasker
@@ -34,7 +35,7 @@ abstract class AbstractTasker
   public function __construct($metadataHelper)
   {
     $this->metadataHelper = $metadataHelper;
-    $this->toolBox = $this->metadataHelper->getToolBox();
+    $this->toolBox = SchemataManager::getInstance();
   }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */

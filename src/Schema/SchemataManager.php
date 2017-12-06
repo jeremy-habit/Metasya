@@ -11,7 +11,8 @@ use MagicMonkey\Metasya\ToolBox;
 class SchemataManager
 {
 
-  const DEFAULT_SCHEMATA_FOLDER_PATH = "vendor" . ToolBox::DS . "magicmonkey" . ToolBox::DS . "metasya" . ToolBox::DS . "data" . ToolBox::DS . "defaultSchemata";
+  /*const DEFAULT_SCHEMATA_FOLDER_PATH = "vendor" . ToolBox::DS . "magicmonkey" . ToolBox::DS . "metasya" . ToolBox::DS . "data" . ToolBox::DS . "defaultSchemata";*/
+  const DEFAULT_SCHEMATA_FOLDER_PATH = "data" . ToolBox::DS . "defaultSchemata";
   const USER_SCHEMATA_FOLDER_PATH = "metasyaSchemata";
 
   /**
@@ -39,9 +40,10 @@ class SchemataManager
    */
   private function __construct()
   {
-    $this->setSchemataFolderPath(self::USER_SCHEMATA_FOLDER_PATH);
-    $this->synchronyze_Default_Schemata();
+    $this->schemata = array();
     $this->toolbox = ToolBox::getInstance();
+    $this->setSchemataFolderPath(self::USER_SCHEMATA_FOLDER_PATH);
+    $this->synchronize_Default_Schemata();
   }
 
   /**
@@ -64,16 +66,24 @@ class SchemataManager
     return self::$instance;
   }
 
-  private function synchronyze_Default_Schemata()
+  private function synchronize_Default_Schemata()
   {
-    // pour chaque schemata.json
     if (is_dir(self::DEFAULT_SCHEMATA_FOLDER_PATH)) {
       $schemataJsonFiles = $this->toolbox->lsFiles(self::DEFAULT_SCHEMATA_FOLDER_PATH, array('json'));
-      /* foreach ($schemataJsonFiles as $schemataJsonFile) {
-         // creation of an object Schema
-
-         // adding of this objet into the list of Schemata
-       }*/
+      foreach ($schemataJsonFiles as $schemataJsonFile) {
+        $json = $this->toolbox->extractJsonFromFile($schemataJsonFile);
+        // test shortcut && nameSpace exists
+        if (isset($json['shortcut']) && isset($json['namespace']) && isset($json["properties"]) && is_array($json["properties"])) {
+          // creation of an object Schema
+          $schema = new Schema($json["shortcut"], $json["namespace"], isset($json["description"]) ? $json['description'] : "");
+          // adding of properties
+          foreach ($json["properties"] as $tag => $value) {
+            $schema->addProperty(new Property($tag, $value, $json["namespace"]));
+          }
+          // adding of this objet into the list of Schemata
+          array_push($this->schemata, $schema);
+        }
+      }
     }
   }
 
