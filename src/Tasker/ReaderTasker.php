@@ -3,7 +3,6 @@
 namespace MagicMonkey\Metasya\Tasker;
 
 use MagicMonkey\Metasya\Inheritance\AbstractTasker;
-use MagicMonkey\Metasya\Schema\Schema;
 
 /**
  * Class ReaderTasker

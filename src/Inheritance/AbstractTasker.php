@@ -2,7 +2,7 @@
 
 namespace MagicMonkey\Metasya\Inheritance;
 
-use Exception;
+use MagicMonkey\Metasya\MetadataHelper;
 
 /**
  * Class AbstractTasker
@@ -16,24 +16,25 @@ abstract class AbstractTasker
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
   /**
-   * @var string $filePath
+   * @var MetadataHelper $metadataHelper
    */
-  protected $filePath;
+  protected $metadataHelper;
+
 
   /**
-   * @var string $exiftoolPath
+   * @var mixed
    */
-  protected $exiftoolPath;
+  protected $toolBox;
 
 
   /**
    * AbstractTasker constructor.
-   * @param $filePath
+   * @param $metadataHelper
    */
-  public function __construct($filePath, $exiftoolPath)
+  public function __construct($metadataHelper)
   {
-    $this->filePath = $filePath;
-    $this->exiftoolPath = $exiftoolPath;
+    $this->metadataHelper = $metadataHelper;
+    $this->toolBox = $this->metadataHelper->getToolBox();
   }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
@@ -48,97 +49,15 @@ abstract class AbstractTasker
    */
   protected function execute($stringifiedCmd, $jsonOutput = false)
   {
-    try {
-      if (file_exists($this->filePath)) {
-        $cmd = $this->trimMultipleWhitespaces($this->exiftoolPath . "exiftool " . (($jsonOutput) ? "-json " : null) . $stringifiedCmd . " " . $this->filePath . " 2>&1");
-        $cmdResult = shell_exec($cmd);
-        if ($cmdResult == null) {
-          if (!$jsonOutput) {
-            return ['exiftoolMessage' => trim($cmdResult), 'success' => false];
-          } else {
-            return null;
-          }
-        } else {
-          if ($this->isJson($cmdResult)) {
-            return $this->convertObjectToArray(json_decode($cmdResult)[0]);
-          } else {
-            return ['exiftoolMessage' => trim($cmdResult), 'success' => true];
-          }
-        }
-      }
-      return "Error : file \" " . $this->filePath . " \" not found !";
-    } catch (Exception $exception) {
-      return $exception->getMessage();
+    $cmd = $this->toolBox->trimMultipleWhitespaces($this->metadataHelper->getExiftoolPath() . "exiftool " . (($jsonOutput) ? "-json " : null) . $stringifiedCmd . " " . $this->metadataHelper->getFilePath() . " 2>&1");
+    $cmdResult = shell_exec($cmd);
+    if ($this->toolBox->isJson($cmdResult)) {
+      return $this->toolBox->convertObjectToArray(json_decode($cmdResult)[0]);
     }
+    return $cmdResult;
   }
 
-  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-  /* ### TOOLS ### */
-  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
-  /**
-   * Replace the multiple whitespaces by one whitespace.
-   * @param $text
-   * @return mixed
-   */
-  protected function trimMultipleWhitespaces($text)
-  {
-    return trim(preg_replace("/ {2,}/", " ", $text));
-  }
-
-  /**
-   * Check if a string is json or not (true or false)
-   * @param $text
-   * @return bool
-   */
-  protected function isJson($text)
-  {
-    json_decode($text);
-    return (json_last_error() == JSON_ERROR_NONE);
-  }
-
-  /**
-   * Return json file content as array
-   * @param $jsonFilePath
-   * @return null|array
-   */
-  protected function extractJsonFromFile($jsonFilePath)
-  {
-    if (file_exists($jsonFilePath)) {
-      $stringifiedJson = file_get_contents($jsonFilePath);
-      return json_decode($stringifiedJson, true)[0];
-    }
-    return null;
-  }
-
-  /**
-   * Convert any object to array recursively.
-   * @param $obj object
-   * @return array
-   */
-  protected function convertObjectToArray($obj)
-  {
-    if (is_object($obj)) $obj = (array)$obj;
-    if (is_array($obj)) {
-      $newArray = [];
-      foreach ($obj as $key => $value) {
-        $newArray[$key] = $this->convertObjectToArray($value);
-      }
-    } else $newArray = $obj;
-    return $newArray;
-  }
-
-  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-  /* ### GETTERS & SETTERS ### */
-  /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-
-  /**
-   * @return mixed
-   */
-  public function getFilePath()
-  {
-    return $this->filePath;
-  }
 
 
 }

@@ -28,7 +28,7 @@ class EraserTasker extends AbstractTasker
     $suffix = "=";
     if ($exclusion) {
       $suffix = null;
-      $stringifiedTargetedMetadata = "-tagsFromFile " . $this->filePath . " ";
+      $stringifiedTargetedMetadata = "-tagsFromFile " . $this->metadataHelper->getFilePath() . " ";
     }
     if (is_array($targetedMetadata)) {
       $targetedMetadataLength = count($targetedMetadata);

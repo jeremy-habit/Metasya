@@ -3,10 +3,10 @@
 namespace MagicMonkey\Metasya;
 
 use Exception;
-use MagicMonkey\Metasya\Schema\Schema;
+use MagicMonkey\Metasya\Schema\SchemataManager;
+use MagicMonkey\Metasya\Tasker\EraserTasker;
 use MagicMonkey\Metasya\Tasker\ReaderTasker;
 use MagicMonkey\Metasya\Tasker\WriterTasker;
-use MagicMonkey\Metasya\Tasker\EraserTasker;
 
 /**
  * Class MetadataHelper
@@ -18,25 +18,36 @@ class MetadataHelper
   /* ### CONSTANTS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
-  /**
-   *
-   */
-  const DS = DIRECTORY_SEPARATOR;
-  /**
-   *
-   */
-  const EXIFTOOL_PATH = "vendor" . self::DS . "magicmonkey" . self::DS . "metasya" . self::DS . "exiftool" . self::DS;
+  const EXIFTOOL_PATH = "vendor" . ToolBox::DS . "magicmonkey" . ToolBox::DS . "metasya" . ToolBox::DS . "exiftool" . ToolBox::DS;
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### ATTRIBUTES & CONSTRUCTORS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
-  private $stateHelper;
+  /**
+   * @var string $filePath
+   */
+  private $filePath;
+
+  /**
+   * @var
+   */
+  private $toolBox;
+
+  /**
+   * @var
+   */
+  private $schemataManager;
 
   /**
    * @var boolean $useProvidedExiftool
    */
   private $useProvidedExiftool;
+
+  /**
+   * @var
+   */
+  private $exiftoolPath;
 
   /**
    * MetadataHelper constructor.
@@ -45,10 +56,11 @@ class MetadataHelper
    */
   public function __construct($filePath, $useProvidedExiftool = true)
   {
+    $this->toolBox = ToolBox::getInstance();
+    $this->schemataManager = SchemataManager::getInstance();
     $this->filePath = $filePath;
     $this->useProvidedExiftool = $useProvidedExiftool;
-    $this->schemas = array();
-    $this->initialize_Taskers();
+    $this->set_Exiftool_Path();
   }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
@@ -56,18 +68,11 @@ class MetadataHelper
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
   /**
-   * Initialize taskers with the $filePath.
-   * Useful when a new MetadataManger is created or when the $filePath is changed.
+   * Set the exiftool path according the value of $useProvidedExiftool
    */
-  private function initialize_Taskers()
+  public function set_Exiftool_Path()
   {
-    unset($this->reader);
-    unset($this->writer);
-    unset($this->eraser);
-    $exiftoolPath = ($this->useProvidedExiftool) ? $this->generate_Full_Exiftool_Path() : "";
-    $this->reader = new ReaderTasker($this->filePath, $exiftoolPath);
-    $this->writer = new WriterTasker($this->filePath, $exiftoolPath);
-    $this->eraser = new EraserTasker($this->filePath, $exiftoolPath);
+    $this->exiftoolPath = ($this->useProvidedExiftool) ? $this->generate_Full_Exiftool_Path() : "";
   }
 
   /**
@@ -76,20 +81,7 @@ class MetadataHelper
    */
   private function generate_Full_Exiftool_Path()
   {
-    return self::EXIFTOOL_PATH . $this->determines_OS() . self::DS;
-  }
-
-  /**
-   * Determines the operating system (windows or unix)
-   * @return string
-   */
-  private function determines_OS()
-  {
-    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-      return "windows";
-    }
-    return "unix";
-
+    return self::EXIFTOOL_PATH . $this->toolBox->determinesOS() . ToolBox::DS;
   }
 
   /**
@@ -106,6 +98,7 @@ class MetadataHelper
       return $exception->getMessage();
     }
   }
+
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### PUBLIC FUNCTIONS ### */
@@ -158,49 +151,6 @@ class MetadataHelper
 
   /* -- Version End -- */
 
-  /* -- Schema Start -- */
-
-  /**
-   * @param $shortcut
-   * @param $nameSpace
-   * @param null $description
-   * @return Schema
-   */
-  public function createSchema($shortcut, $nameSpace, $description = null)
-  {
-    $newSchema = new Schema($shortcut, $nameSpace, $description);
-    return $newSchema;
-  }
-
-  /**
-   * @param $schema
-   * @return bool
-   */
-  public function addSchema($schema)
-  {
-    if ($schema instanceof Schema) {
-      array_push($this->schemas, $schema);
-      return true;
-    }
-    return false;
-  }
-
-
-  /**
-   * @param $schema
-   * @return bool
-   */
-  public function removeSchema($schema)
-  {
-    if (($key = array_search($schema, $this->schemas, true)) !== FALSE) {
-      unset($this->schemas[$key]);
-      return true;
-    }
-    return false;
-  }
-
-  /* -- Schema End -- */
-
   /**
    * Allows the user to execute any commands with the used exiftool version
    * @param $stringifyCmd
@@ -231,7 +181,8 @@ class MetadataHelper
    */
   public function remove($targetedMetadata = "all", $excludedMetadata = null, $overwrite = true)
   {
-    return $this->eraser->remove($targetedMetadata, $excludedMetadata, $overwrite);
+    $eraser = new EraserTasker($this);
+    return $eraser->remove($targetedMetadata, $excludedMetadata, $overwrite);
   }
 
   /* ReaderTasker */
@@ -243,7 +194,8 @@ class MetadataHelper
    */
   public function read($selectedMetadata = "all", $excludedMetadata = null)
   {
-    return $this->reader->read($selectedMetadata, $excludedMetadata);
+    $reader = new ReaderTasker($this);
+    return $reader->read($selectedMetadata, $excludedMetadata);
   }
 
   /**
@@ -254,7 +206,8 @@ class MetadataHelper
    */
   public function readWithPrefix($selectedMetadata = "all", $num = 0, $excludedMetadata = null)
   {
-    return $this->reader->readWithPrefix($selectedMetadata, $num, $excludedMetadata);
+    $reader = new ReaderTasker($this);
+    return $reader->readWithPrefix($selectedMetadata, $num, $excludedMetadata);
   }
 
   /**
@@ -265,7 +218,8 @@ class MetadataHelper
    */
   public function readByGroup($selectedMetadata = "all", $num = 0, $excludedMetadata = null)
   {
-    return $this->reader()->readByGroup($selectedMetadata, $num, $excludedMetadata);
+    $reader = new ReaderTasker($this);
+    return $reader->readByGroup($selectedMetadata, $num, $excludedMetadata);
   }
 
   /* WriterTasker */
@@ -278,7 +232,8 @@ class MetadataHelper
    */
   public function write($targetedMetadata = null, $replace = true, $overwrite = true)
   {
-    return $this->writer->write($targetedMetadata, $replace, $overwrite);
+    $writer = new WriterTasker($this);
+    return $writer->write($targetedMetadata, $replace, $overwrite);
   }
 
   /**
@@ -289,7 +244,8 @@ class MetadataHelper
    */
   public function writeFromJsonFile($jsonFilePath = null, $replace = true, $overwrite = true)
   {
-    return $this->writer->writeFromJsonFile($jsonFilePath, $replace, $overwrite);
+    $writer = new WriterTasker($this);
+    return $writer->writeFromJsonFile($jsonFilePath, $replace, $overwrite);
   }
 
   /**
@@ -300,36 +256,13 @@ class MetadataHelper
    */
   public function writeFromJson($json, $replace = true, $overwrite = true)
   {
-    return $this->writer->writeFromJson($json, $replace, $overwrite);
+    $writer = new WriterTasker($this);
+    return $writer->writeFromJson($json, $replace, $overwrite);
   }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### GETTERS & SETTERS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
-
-  /**
-   * @return ReaderTasker
-   */
-  public function reader()
-  {
-    return $this->reader;
-  }
-
-  /**
-   * @return WriterTasker
-   */
-  public function writer()
-  {
-    return $this->writer;
-  }
-
-  /**
-   * @return EraserTasker
-   */
-  public function eraser()
-  {
-    return $this->eraser;
-  }
 
   /**
    * @return mixed
@@ -345,7 +278,46 @@ class MetadataHelper
   public function setFilePath($filePath)
   {
     $this->filePath = $filePath;
-    $this->initialize_Taskers();
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getSchemataManager()
+  {
+    return $this->schemataManager;
+  }
+
+  /**
+   * @param mixed $schemataManager
+   */
+  public function setSchemataManager($schemataManager)
+  {
+    $this->schemataManager = $schemataManager;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getToolBox()
+  {
+    return $this->toolBox;
+  }
+
+  /**
+   * @param mixed $toolBox
+   */
+  public function setToolBox($toolBox)
+  {
+    $this->toolBox = $toolBox;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getExiftoolPath()
+  {
+    return $this->exiftoolPath;
   }
 
   /**
@@ -354,23 +326,16 @@ class MetadataHelper
   public function setUseProvidedExiftool($useProvidedExiftool)
   {
     $this->useProvidedExiftool = $useProvidedExiftool;
-    $this->initialize_Taskers();
+    $this->set_Exiftool_Path();
   }
 
   /**
-   * @return mixed
+   * @param mixed $schemataFolderPath
    */
-  public function getSchemas()
+  public function updateSchemataFolderPath($schemataFolderPath)
   {
-    return $this->schemas;
-  }
-
-  /**
-   * @param mixed $schemas
-   */
-  public function setSchemas($schemas)
-  {
-    $this->schemas = $schemas;
+    $oldSchemataFolderPath = $this->schemataManager->getSchemataFolderPath();
+    $this->schemataManager->setSchemataFolderPath($schemataFolderPath, $oldSchemataFolderPath);
   }
 
 

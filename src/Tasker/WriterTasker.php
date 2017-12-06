@@ -21,7 +21,7 @@ class WriterTasker extends AbstractTasker
   private function untarget_Existing_Metadata($targetedMetadata)
   {
     $newTargetedMetadata = $targetedMetadata;
-    $reader = new ReaderTasker($this->filePath, $this->exiftoolPath);
+    $reader = new ReaderTasker($this->metadataHelper);
     foreach ($targetedMetadata as $metadataTag => $metadaValue) {
       if (array_key_exists(strtolower($metadataTag), array_change_key_case($reader->read(), CASE_LOWER))) {
         unset($newTargetedMetadata[$metadataTag]);
@@ -54,8 +54,9 @@ class WriterTasker extends AbstractTasker
   /**
    * Return the stringified command to execute with exiftool.
    * @param $targetedMetadata
+   * @param $replace
    * @param $overwrite
-   * @return string|null
+   * @return null|string
    */
   private function make_Stringify_Cmd($targetedMetadata, $replace, $overwrite)
   {
@@ -77,6 +78,7 @@ class WriterTasker extends AbstractTasker
   /**
    * Add or edit metadata tag value.
    * @param null $targetedMetadata
+   * @param bool $replace
    * @param bool $overwrite
    * @return array|bool|null|string
    */
@@ -99,7 +101,7 @@ class WriterTasker extends AbstractTasker
   public function writeFromJsonFile($jsonFilePath = null, $replace = true, $overwrite = true)
   {
     if (!empty($jsonFilePath) && file_exists($jsonFilePath)) {
-      $stringifiedCmd = $this->make_Stringify_Cmd($this->extractJsonFromFile($jsonFilePath), $replace, $overwrite);
+      $stringifiedCmd = $this->make_Stringify_Cmd($this->toolBox->extractJsonFromFile($jsonFilePath), $replace, $overwrite);
       return ($stringifiedCmd != null) ? $this->execute($stringifiedCmd) : "Nothing to write ...";
     }
     return false;
@@ -114,8 +116,8 @@ class WriterTasker extends AbstractTasker
    */
   public function writeFromJson($json, $replace = true, $overwrite = true)
   {
-    if ($this->isJson($json)) {
-      return $this->write($this->convertObjectToArray(json_decode($json)[0]), $replace, $overwrite);
+    if ($this->toolBox->isJson($json)) {
+      return $this->write($this->toolBox->convertObjectToArray(json_decode($json)[0]), $replace, $overwrite);
     }
     return false;
   }
