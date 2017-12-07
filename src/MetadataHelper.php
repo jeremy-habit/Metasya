@@ -32,6 +32,11 @@ class MetadataHelper
   /**
    * @var
    */
+  private $displayErrors;
+
+  /**
+   * @var
+   */
   private $toolBox;
 
   /**
@@ -53,9 +58,11 @@ class MetadataHelper
    * MetadataHelper constructor.
    * @param string $filePath
    * @param bool $useProvidedExiftool
+   * @param bool $displayErrors
    */
-  public function __construct($filePath, $useProvidedExiftool = true)
+  public function __construct($filePath, $useProvidedExiftool = true, $displayErrors = true)
   {
+    $this->displayErrors = $displayErrors;
     $this->toolBox = ToolBox::getInstance();
     $this->schemataManager = SchemataManager::getInstance();
     $this->filePath = $filePath;
@@ -336,6 +343,22 @@ class MetadataHelper
   {
     $oldSchemataFolderPath = $this->schemataManager->getSchemataFolderPath();
     $this->schemataManager->setSchemataFolderPath($schemataFolderPath, $oldSchemataFolderPath);
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getDisplayErrors()
+  {
+    return $this->displayErrors;
+  }
+
+  /**
+   * @param mixed $displayErrors
+   */
+  public function setDisplayErrors($displayErrors)
+  {
+    $this->displayErrors = $displayErrors;
   }
 
 

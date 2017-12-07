@@ -4,6 +4,7 @@ namespace MagicMonkey\Metasya\Inheritance;
 
 use MagicMonkey\Metasya\MetadataHelper;
 use MagicMonkey\Metasya\Schema\SchemataManager;
+use MagicMonkey\Metasya\ToolBox;
 
 /**
  * Class AbstractTasker
@@ -29,13 +30,20 @@ abstract class AbstractTasker
 
 
   /**
+   * @var $this
+   */
+  protected $schemataManager;
+
+
+  /**
    * AbstractTasker constructor.
    * @param $metadataHelper
    */
   public function __construct($metadataHelper)
   {
     $this->metadataHelper = $metadataHelper;
-    $this->toolBox = SchemataManager::getInstance();
+    $this->toolBox = ToolBox::getInstance();
+    $this->schemataManager = SchemataManager::getInstance();
   }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
@@ -50,15 +58,15 @@ abstract class AbstractTasker
    */
   protected function execute($stringifiedCmd, $jsonOutput = false)
   {
-    $cmd = $this->toolBox->trimMultipleWhitespaces($this->metadataHelper->getExiftoolPath() . "exiftool " . (($jsonOutput) ? "-json " : null) . $stringifiedCmd . " " . $this->metadataHelper->getFilePath() . " 2>&1");
+    $jsonOption = $jsonOutput ? "-json " : null;
+    $errorsOption = $this->metadataHelper->getDisplayErrors() ? " 2>&1" : null;
+    $cmd = $this->toolBox->trimMultipleWhitespaces($this->metadataHelper->getExiftoolPath() . "exiftool " . $jsonOption . $stringifiedCmd . " " . $this->metadataHelper->getFilePath() . $errorsOption);
     $cmdResult = shell_exec($cmd);
     if ($this->toolBox->isJson($cmdResult)) {
       return $this->toolBox->convertObjectToArray(json_decode($cmdResult)[0]);
     }
     return $cmdResult;
   }
-
-
 
 
 }

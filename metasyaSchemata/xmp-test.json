@@ -1,6 +1,6 @@
 [
   {
-    "shortcut": "xmp-test",
+    "shortcut": "USER-xmp",
     "description": "",
     "namespace": "XMP-dc",
     "properties": {
@@ -8,6 +8,7 @@
         "value": "coucou"
       },
       "creator": {
+        "namespace": "NOT XMP"
       }
     }
   }

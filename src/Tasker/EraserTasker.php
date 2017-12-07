@@ -39,13 +39,6 @@ class EraserTasker extends AbstractTasker
           $stringifiedTargetedMetadata .= " ";
         }
       }
-    } else {
-      $targetedMetadata = trim($targetedMetadata);
-      if (!empty($targetedMetadata)) {
-        $stringifiedTargetedMetadata .= $prefix . $targetedMetadata . $suffix;
-      } else {
-        $stringifiedTargetedMetadata = "";
-      }
     }
     return $stringifiedTargetedMetadata;
   }

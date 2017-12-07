@@ -44,6 +44,7 @@ class SchemataManager
     $this->toolbox = ToolBox::getInstance();
     $this->setSchemataFolderPath(self::USER_SCHEMATA_FOLDER_PATH);
     $this->synchronize_Default_Schemata();
+    $this->synchronize_User_Schemata();
   }
 
   /**
@@ -51,7 +52,24 @@ class SchemataManager
    */
   private function __clone()
   {
+
   }
+
+  public function isSchemaShortcut($string, $returnSchema = false)
+  {
+    foreach ($this->schemata as $schema) {
+      if ($schema->getShortcut() == $string) {
+        return $returnSchema ? $schema : true;
+      }
+    }
+    return false;
+  }
+
+  public function getSchemaFromShortcut($schortcut)
+  {
+    return $this->isSchemaShortcut($schortcut, true);
+  }
+
 
   /**
    * Method to reach the UNIQUE instance of the class.
@@ -66,25 +84,39 @@ class SchemataManager
     return self::$instance;
   }
 
-  private function synchronize_Default_Schemata()
+  private function convert_Json_File_To_Schema_Object($folderPath)
   {
-    if (is_dir(self::DEFAULT_SCHEMATA_FOLDER_PATH)) {
-      $schemataJsonFiles = $this->toolbox->lsFiles(self::DEFAULT_SCHEMATA_FOLDER_PATH, array('json'));
+    if (is_dir($folderPath)) {
+      $schemataJsonFiles = $this->toolbox->lsFiles($folderPath, array('json'));
       foreach ($schemataJsonFiles as $schemataJsonFile) {
         $json = $this->toolbox->extractJsonFromFile($schemataJsonFile);
         // test shortcut && nameSpace exists
         if (isset($json['shortcut']) && isset($json['namespace']) && isset($json["properties"]) && is_array($json["properties"])) {
           // creation of an object Schema
-          $schema = new Schema($json["shortcut"], $json["namespace"], isset($json["description"]) ? $json['description'] : "");
+          $schema = new Schema(trim($json["shortcut"]), trim($json["namespace"]), isset($json["description"]) ? $json['description'] : "");
           // adding of properties
-          foreach ($json["properties"] as $tag => $value) {
-            $schema->addProperty(new Property($tag, $value, $json["namespace"]));
+          foreach ($json["properties"] as $tag => $dataTag) {
+            $schema->addProperty(new Property(
+              $tag,
+              isset($dataTag["value"]) ? $dataTag["value"] : "",
+              isset($dataTag["namespace"]) ? $dataTag["namespace"] : $json["namespace"]));
           }
           // adding of this objet into the list of Schemata
           array_push($this->schemata, $schema);
         }
       }
     }
+  }
+
+  private function synchronize_Default_Schemata()
+  {
+    $this->convert_Json_File_To_Schema_Object(self::DEFAULT_SCHEMATA_FOLDER_PATH);
+  }
+
+
+  private function synchronize_User_Schemata()
+  {
+    $this->convert_Json_File_To_Schema_Object(self::USER_SCHEMATA_FOLDER_PATH);
   }
 
 

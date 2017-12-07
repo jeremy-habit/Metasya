@@ -3,6 +3,7 @@
 namespace MagicMonkey\Metasya\Tasker;
 
 use MagicMonkey\Metasya\Inheritance\AbstractTasker;
+use MagicMonkey\Metasya\Schema\Schema;
 
 /**
  * Class ReaderTasker
@@ -24,15 +25,14 @@ class ReaderTasker extends AbstractTasker
   private function stringify_Targeted_Metadata($targetedMetadata, $exclusion = false)
   {
     /* test if it's an instance of Schema */
-   /* if ($targetedMetadata instanceof Schema) {
-      $targetedMetadata = $targetedMetadata->buildTargetedMetadata();
-    }*/
+    /* if ($targetedMetadata instanceof Schema) {
+       $targetedMetadata = $targetedMetadata->buildTargetedMetadata();
+     }*/
 
     /* test if it's a Schema's shortcut */
- /*   if ($targetedMetadata) {
+    /*   if ($targetedMetadata) {
 
-    }*/
-
+       }*/
 
     $stringifiedTargetedMetadata = "";
     $prefix = "-";
@@ -43,15 +43,16 @@ class ReaderTasker extends AbstractTasker
       $targetedMetadataLength = count($targetedMetadata);
       $i = 0;
       foreach ($targetedMetadata as $metadataTag) {
-        $stringifiedTargetedMetadata .= $prefix . $metadataTag;
+        if ($metadataTag instanceOf Schema) {
+          $stringifiedTargetedMetadata .= $this->stringify_Targeted_Metadata($metadataTag->buildTargetedMetadata(), $exclusion);
+        } else if (($schema = $this->schemataManager->isSchemaShortcut($metadataTag, true)) instanceof Schema) {
+          $stringifiedTargetedMetadata .= $this->stringify_Targeted_Metadata($schema->buildTargetedMetadata(), $exclusion);
+        } else {
+          $stringifiedTargetedMetadata .= $prefix . $metadataTag;
+        }
         if ($i++ !== $targetedMetadataLength) {
           $stringifiedTargetedMetadata .= " ";
         }
-      }
-    } else {
-      $targetedMetadata = trim($targetedMetadata);
-      if (!empty($targetedMetadata)) {
-        $stringifiedTargetedMetadata = $prefix . $targetedMetadata;
       }
     }
     return $stringifiedTargetedMetadata;

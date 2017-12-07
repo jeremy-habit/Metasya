@@ -33,7 +33,7 @@ class Schema
   /**
    * Schema constructor.
    * @param $shortcut
-   * @param $nameSpace
+   * @param $namespace
    * @param $description
    */
   public function __construct($shortcut, $namespace, $description = null)
