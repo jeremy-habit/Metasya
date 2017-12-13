@@ -17,7 +17,6 @@ $metadataHelper->setDisplayErrors(false);
 
 var_dump($metadataHelper->read(array("xmp-test", "description")));
 
-
 /*
 var_dump($metadataHelper->readByGroup());
 var_dump($metadataHelper->readWithPrefix());  */

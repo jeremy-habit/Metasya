@@ -11,8 +11,8 @@ use MagicMonkey\Metasya\ToolBox;
 class SchemataManager
 {
 
-  /*const DEFAULT_SCHEMATA_FOLDER_PATH = "vendor" . ToolBox::DS . "magicmonkey" . ToolBox::DS . "metasya" . ToolBox::DS . "data" . ToolBox::DS . "defaultSchemata";*/
-  const DEFAULT_SCHEMATA_FOLDER_PATH = "data" . ToolBox::DS . "defaultSchemata";
+  const DEFAULT_SCHEMATA_FOLDER_PATH = "vendor" . ToolBox::DS . "magicmonkey" . ToolBox::DS . "metasya" . ToolBox::DS . "data" . ToolBox::DS . "defaultSchemata";
+  /*const DEFAULT_SCHEMATA_FOLDER_PATH = "data" . ToolBox::DS . "defaultSchemata";*/
   const USER_SCHEMATA_FOLDER_PATH = "metasyaSchemata";
 
   /**
