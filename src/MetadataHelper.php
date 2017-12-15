@@ -181,12 +181,12 @@ class MetadataHelper
   /* EraserTasker */
 
   /**
-   * @param string $targetedMetadata
-   * @param null $excludedMetadata
+   * @param array $targetedMetadata
+   * @param array $excludedMetadata
    * @param bool $overwrite
    * @return array|null|string
    */
-  public function remove($targetedMetadata = "all", $excludedMetadata = null, $overwrite = true)
+  public function remove($targetedMetadata, $excludedMetadata = null, $overwrite = true)
   {
     $eraser = new EraserTasker($this);
     return $eraser->remove($targetedMetadata, $excludedMetadata, $overwrite);
@@ -195,35 +195,35 @@ class MetadataHelper
   /* ReaderTasker */
 
   /**
-   * @param string $selectedMetadata
-   * @param null $excludedMetadata
+   * @param array $selectedMetadata
+   * @param array $excludedMetadata
    * @return array|null|string
    */
-  public function read($selectedMetadata = "all", $excludedMetadata = null)
+  public function read($selectedMetadata = null, $excludedMetadata = null)
   {
     $reader = new ReaderTasker($this);
     return $reader->read($selectedMetadata, $excludedMetadata);
   }
 
   /**
-   * @param string $selectedMetadata
+   * @param array $selectedMetadata
    * @param int $num
-   * @param null $excludedMetadata
+   * @param array $excludedMetadata
    * @return array|null|string
    */
-  public function readWithPrefix($selectedMetadata = "all", $num = 0, $excludedMetadata = null)
+  public function readWithPrefix($selectedMetadata = null, $num = 0, $excludedMetadata = null)
   {
     $reader = new ReaderTasker($this);
     return $reader->readWithPrefix($selectedMetadata, $num, $excludedMetadata);
   }
 
   /**
-   * @param string $selectedMetadata
+   * @param array $selectedMetadata
    * @param int $num
-   * @param null $excludedMetadata
+   * @param array $excludedMetadata
    * @return array|null|string
    */
-  public function readByGroup($selectedMetadata = "all", $num = 0, $excludedMetadata = null)
+  public function readByGroup($selectedMetadata = null, $num = 0, $excludedMetadata = null)
   {
     $reader = new ReaderTasker($this);
     return $reader->readByGroup($selectedMetadata, $num, $excludedMetadata);
@@ -232,7 +232,7 @@ class MetadataHelper
   /* WriterTasker */
 
   /**
-   * @param null $targetedMetadata
+   * @param array $targetedMetadata
    * @param bool $replace
    * @param bool $overwrite
    * @return array|bool|null|string
@@ -244,7 +244,7 @@ class MetadataHelper
   }
 
   /**
-   * @param null $jsonFilePath
+   * @param string $jsonFilePath
    * @param bool $replace
    * @param bool $overwrite
    * @return array|bool|null|string

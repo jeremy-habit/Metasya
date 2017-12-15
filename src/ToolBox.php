@@ -53,7 +53,7 @@ class ToolBox
         $stringifiedExtensionsList .= ",";
       }
     }
-    return glob($folderPath . DS . '*.{' . $stringifiedExtensionsList . '}', GLOB_BRACE);
+    return glob($folderPath . self::DS . '*.{' . $stringifiedExtensionsList . '}', GLOB_BRACE);
   }
 
   /**
@@ -77,10 +77,10 @@ class ToolBox
       $objects = scandir($dir);
       foreach ($objects as $object) {
         if ($object != "." && $object != "..") {
-          if (is_dir($dir . DS . $object))
-            $this->recursiveRmdir($dir . DS . $object);
+          if (is_dir($dir . self::DS . $object))
+            $this->recursiveRmdir($dir . self::DS . $object);
           else
-            unlink($dir . DS . $object);
+            unlink($dir . self::DS . $object);
         }
       }
       rmdir($dir);

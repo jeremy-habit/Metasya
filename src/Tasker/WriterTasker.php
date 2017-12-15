@@ -17,6 +17,7 @@ class WriterTasker extends AbstractTasker
 
   /**
    * @param $targetedMetadata
+   * @return mixed
    */
   private function untarget_Existing_Metadata($targetedMetadata)
   {

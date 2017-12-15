@@ -30,7 +30,7 @@ abstract class AbstractTasker
 
 
   /**
-   * @var $this
+   * @var SchemataManager $schemataManager
    */
   protected $schemataManager;
 

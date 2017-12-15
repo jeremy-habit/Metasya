@@ -62,12 +62,12 @@ class EraserTasker extends AbstractTasker
 
   /**
    * Remove metadata tag.
-   * @param string $targetedMetadata
-   * @param null $excludedMetadata
+   * @param array $targetedMetadata
+   * @param array $excludedMetadata
    * @param bool $overwrite
    * @return array|null|string
    */
-  public function remove($targetedMetadata = "all", $excludedMetadata = null, $overwrite = true)
+  public function remove($targetedMetadata, $excludedMetadata = null, $overwrite = true)
   {
     $stringifiedCmd = $this->make_Stringify_Cmd($targetedMetadata, $excludedMetadata, $overwrite);
     return $this->execute($stringifiedCmd);

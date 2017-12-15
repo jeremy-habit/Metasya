@@ -24,16 +24,6 @@ class ReaderTasker extends AbstractTasker
    */
   private function stringify_Targeted_Metadata($targetedMetadata, $exclusion = false)
   {
-    /* test if it's an instance of Schema */
-    /* if ($targetedMetadata instanceof Schema) {
-       $targetedMetadata = $targetedMetadata->buildTargetedMetadata();
-     }*/
-
-    /* test if it's a Schema's shortcut */
-    /*   if ($targetedMetadata) {
-
-       }*/
-
     $stringifiedTargetedMetadata = "";
     $prefix = "-";
     if ($exclusion) {
@@ -76,11 +66,11 @@ class ReaderTasker extends AbstractTasker
 
   /**
    * Return metadata as array without group option.
-   * @param string $selectedMetadata
-   * @param string $excludedMetadata
+   * @param array $selectedMetadata
+   * @param array $excludedMetadata
    * @return array|null|string
    */
-  public function read($selectedMetadata = "all", $excludedMetadata = null)
+  public function read($selectedMetadata = null, $excludedMetadata = null)
   {
     $stringifiedCmd = $this->make_Stringify_Cmd($selectedMetadata, $excludedMetadata);
     return $this->execute($stringifiedCmd, true);
@@ -88,12 +78,12 @@ class ReaderTasker extends AbstractTasker
 
   /**
    * Return metadata as array with the group option -G[$num...] : Print group name for each tag.
-   * @param string $selectedMetadata
+   * @param array $selectedMetadata
    * @param int $num
-   * @param string $excludedMetadata
+   * @param array $excludedMetadata
    * @return array|null|string
    */
-  public function readWithPrefix($selectedMetadata = "all", $num = 0, $excludedMetadata = null)
+  public function readWithPrefix($selectedMetadata = null, $num = 0, $excludedMetadata = null)
   {
     $stringifiedCmd = $this->make_Stringify_Cmd($selectedMetadata, $excludedMetadata, "-G" . $num);
     return $this->execute($stringifiedCmd, true);
@@ -101,12 +91,12 @@ class ReaderTasker extends AbstractTasker
 
   /**
    * Return metadata as array with the group option -g[$num...] : Organize output by tag group.
-   * @param string $selectedMetadata
+   * @param array $selectedMetadata
    * @param int $num
-   * @param string $excludedMetadata
+   * @param array $excludedMetadata
    * @return array|null|string
    */
-  public function readByGroup($selectedMetadata = "all", $num = 0, $excludedMetadata = null)
+  public function readByGroup($selectedMetadata = null, $num = 0, $excludedMetadata = null)
   {
     $stringifiedCmd = $this->make_Stringify_Cmd($selectedMetadata, $excludedMetadata, "-g" . $num);
     return $this->execute($stringifiedCmd, true);
