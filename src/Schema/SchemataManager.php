@@ -12,7 +12,7 @@ class SchemataManager
 {
 
   /* const DEFAULT_SCHEMATA_FOLDER_PATH = "vendor" . ToolBox::DS . "magicmonkey" . ToolBox::DS . "metasya" . ToolBox::DS . "data" . ToolBox::DS . "defaultSchemata";*/
-  const DEFAULT_SCHEMATA_FOLDER_PATH = "data" . ToolBox::DS . "defaultSchemata";
+  const DEFAULT_SCHEMATA_FOLDER_PATH = "src" . ToolBox::DS . "Schema" . ToolBox::DS . "defaultSchemata";
   const USER_SCHEMATA_FOLDER_PATH = "metasyaSchemata";
 
   /**
@@ -33,7 +33,7 @@ class SchemataManager
   /**
    * @var
    */
-  protected $schemataFolderPath;
+  protected $userSchemataFolderPath;
 
   /**
    * private constructor
@@ -42,7 +42,7 @@ class SchemataManager
   {
     $this->schemata = array();
     $this->toolbox = ToolBox::getInstance();
-    $this->setSchemataFolderPath(self::USER_SCHEMATA_FOLDER_PATH);
+    $this->setUserSchemataFolderPath(self::USER_SCHEMATA_FOLDER_PATH);
     $this->synchronize_Default_Schemata();
     $this->synchronize_User_Schemata();
   }
@@ -122,40 +122,48 @@ class SchemataManager
 
   /**
    * @param string $oldSchemataFolderPath
+   * @param bool $removeDefaultFolder
    */
-  private function synchronize_Schemata_Folder($oldSchemataFolderPath = "")
+  private function change_User_Schemata_Folder($oldSchemataFolderPath, $removeDefaultFolder = false)
   {
     // creation of the new folder(s)
-    if (!is_dir($this->schemataFolderPath)) {
-      mkdir($this->schemataFolderPath, 0777, true);
+    if (!is_dir($this->userSchemataFolderPath)) {
+      mkdir($this->userSchemataFolderPath, 0777, true);
     }
     // if old folders exists
     if (is_dir($oldSchemataFolderPath)) {
       // move schemata in the nex folder(s)
-      $schemataJsonFiles = $this->toolbox->lsFiles(self::DEFAULT_SCHEMATA_FOLDER_PATH, array('json'));
-      foreach ($schemataJsonFiles as $schemataJsonFile) {
-        rename($schemataJsonFile, $this->schemataFolderPath . DS . basename($schemataJsonFile));
+      $schemataJsonFiles = $this->toolbox->lsFiles(self::USER_SCHEMATA_FOLDER_PATH, array('json'));
+      if ($removeDefaultFolder) {
+        foreach ($schemataJsonFiles as $schemataJsonFile) {
+          rename($schemataJsonFile, $this->userSchemataFolderPath . ToolBox::DS . basename($schemataJsonFile));
+        }
+        $this->toolbox->recursiveRmdir($oldSchemataFolderPath);
+      } else {
+        foreach ($schemataJsonFiles as $schemataJsonFile) {
+          copy($schemataJsonFile, $this->userSchemataFolderPath . ToolBox::DS . basename($schemataJsonFile));
+        }
       }
-      $this->toolbox->recursiveRmdir(dirname($oldSchemataFolderPath));
     }
   }
 
   /**
    * @return mixed
    */
-  public function getSchemataFolderPath()
+  public function getUserSchemataFolderPath()
   {
-    return $this->schemataFolderPath;
+    return $this->userSchemataFolderPath;
   }
 
   /**
-   * @param mixed $schemataFolderPath
-   * @param string $oldSchemataFolderPath
+   * @param mixed $userSchemataFolderPath
+   * @param bool $removeDefaultOlder
    */
-  public function setSchemataFolderPath($schemataFolderPath, $oldSchemataFolderPath = "")
+  public function setUserSchemataFolderPath($userSchemataFolderPath, $removeDefaultOlder = false)
   {
-    $this->schemataFolderPath = $schemataFolderPath;
-    $this->synchronize_Schemata_Folder($oldSchemataFolderPath);
+    $oldSchemataFolderPath = $this->userSchemataFolderPath;
+    $this->userSchemataFolderPath = $userSchemataFolderPath;
+    $this->change_User_Schemata_Folder($oldSchemataFolderPath, $removeDefaultOlder);
   }
 
   /**

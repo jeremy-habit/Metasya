@@ -1,22 +1,31 @@
 <?php
 
+
 use MagicMonkey\Metasya\MetadataHelper;
+use MagicMonkey\Metasya\Schema\Schema;
+use MagicMonkey\Metasya\Schema\Property;
 
 require_once 'Autoloader.php';
 Autoloader::register();
 
 /* ### MAIN */
 
-/*var_dump(\MagicMonkey\Metasya\Schema\SchemataManager::getInstance()->getSchemata());*/
 
 $metadataHelper = new MetadataHelper("data/images/photo1.jpg", false);
 $metadataHelper->setFilePath("data/images/paysage.jpg");
-$metadataHelper->setDisplayErrors(false);
 
-/* READER TEST */
 
-var_dump($metadataHelper->read(array("xmp-test", "description")));
+$titleProperty = new Property("Title");
+$creatorProperty = new Property("Creator", "", "Mr nobody");
+$descriptionProperty = new Property("Description");
+$sizeProperty = new Property("FileSize", "System");
 
-/*
-var_dump($metadataHelper->readByGroup());
-var_dump($metadataHelper->readWithPrefix());  */
+$mySchemaObject = new Schema("shortcut", "XMP-dc", "Schema to get some metadata");
+$mySchemaObject->addProperty($titleProperty);
+$mySchemaObject->addProperty($creatorProperty);
+$mySchemaObject->addProperty($descriptionProperty);
+$mySchemaObject->addProperty($sizeProperty);
+
+var_dump($mySchemaObject->buildTargetedMetadata());
+$mySchemaObject->removeProperty($creatorProperty);
+var_dump($mySchemaObject->getProperties());

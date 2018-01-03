@@ -4,11 +4,11 @@
     "description": "",
     "namespace": "XMP-dc",
     "properties": {
-      "title": {
+      "description": {
         "value": "coucou"
       },
       "creator": {
-        "namespace": "NOT XMP"
+        "namespace": "NOT-XMP"
       }
     }
   }

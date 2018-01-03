@@ -11,22 +11,22 @@ class Schema
 {
 
   /**
-   * @var
+   * @var string $shortcut
    */
   private $shortcut;
 
   /**
-   * @var null
+   * @var string $namespace
    */
   private $namespace;
 
   /**
-   * @var null
+   * @var string $description
    */
   private $description;
 
   /**
-   * @var
+   * @var Property[] $properties
    */
   private $properties;
 
@@ -48,10 +48,10 @@ class Schema
   {
     $targetedMetadata = array();
     foreach ($this->properties as $property) {
-      if ($property->getNameSpace() != null) {
-        $metadataTag = $property->getNameSpace() . ":" . $property->getTagName();
+      if (!empty(trim($property->getNamespace()))) {
+        $metadataTag = $property->getNamespace() . ":" . $property->getTagName();
       } else {
-        $metadataTag = $this->getNameSpace() . ":" . $property->getTagName();
+        $metadataTag = $this->getNamespace() . ":" . $property->getTagName();
       }
       array_push($targetedMetadata, $metadataTag);
     }
@@ -84,26 +84,38 @@ class Schema
     return false;
   }
 
+  public function deploy()
+  {
+    // create or update the json
+    if (SchemataManager::getInstance()->getSchemaFromShortcut($this->shortcut)) {
+
+    }
+
+  }
+
   /**
    * @return null
    */
-  public function getNamespace()
+  public
+  function getNamespace()
   {
     return $this->namespace;
   }
 
   /**
-   * @param null $nameSpace
+   * @param null $namespace
    */
-  public function setNamespace($nameSpace)
+  public
+  function setNamespace($namespace)
   {
-    $this->namespace = $nameSpace;
+    $this->namespace = $namespace;
   }
 
   /**
    * @return null
    */
-  public function getDescription()
+  public
+  function getDescription()
   {
     return $this->description;
   }
@@ -111,7 +123,8 @@ class Schema
   /**
    * @param null $description
    */
-  public function setDescription($description)
+  public
+  function setDescription($description)
   {
     $this->description = $description;
   }
@@ -119,23 +132,17 @@ class Schema
   /**
    * @return mixed
    */
-  public function getProperties()
+  public
+  function getProperties()
   {
     return $this->properties;
   }
 
   /**
-   * @param mixed $properties
-   */
-  public function setProperties($properties)
-  {
-    $this->properties = $properties;
-  }
-
-  /**
    * @return mixed
    */
-  public function getShortcut()
+  public
+  function getShortcut()
   {
     return $this->shortcut;
   }
@@ -143,7 +150,8 @@ class Schema
   /**
    * @param mixed $shortcut
    */
-  public function setShortcut($shortcut)
+  public
+  function setShortcut($shortcut)
   {
     $this->shortcut = $shortcut;
   }

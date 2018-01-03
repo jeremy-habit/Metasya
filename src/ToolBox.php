@@ -73,14 +73,15 @@ class ToolBox
    */
   public function recursiveRmdir($dir)
   {
-    if (is_dir($dir)) {
-      $objects = scandir($dir);
-      foreach ($objects as $object) {
-        if ($object != "." && $object != "..") {
-          if (is_dir($dir . self::DS . $object))
-            $this->recursiveRmdir($dir . self::DS . $object);
+    $bannedValue = array("*", "..", ".");
+    if (!in_array($dir, $bannedValue) && is_dir($dir)) {
+      $dirAndFiles = array_diff(scandir($dir), $bannedValue);
+      foreach ($dirAndFiles as $dirOrFile) {
+        if ($dirOrFile != "." && $dirOrFile != "..")  { /* normally impossible thanks to array_diff above but ... */
+          if (is_dir($dir . self::DS . $dirOrFile))
+            $this->recursiveRmdir($dir . self::DS . $dirOrFile);
           else
-            unlink($dir . self::DS . $object);
+            unlink($dir . self::DS . $dirOrFile);
         }
       }
       rmdir($dir);

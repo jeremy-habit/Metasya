@@ -18,7 +18,7 @@ class Property
   /**
    * @var
    */
-  private $nameSpace;
+  private $namespace;
 
   /**
    * @var
@@ -29,13 +29,13 @@ class Property
    * Property constructor.
    * @param $tagName
    * @param null $value
-   * @param null $nameSpace
+   * @param null $namespace
    */
-  public function __construct($tagName, $value = null, $nameSpace = null)
+  public function __construct($tagName, $namespace = null, $value = null)
   {
     $this->tagName = $tagName;
     $this->value = $value;
-    $this->nameSpace = $nameSpace;
+    $this->namespace = $namespace;
   }
 
   /**
@@ -57,17 +57,33 @@ class Property
   /**
    * @return mixed
    */
-  public function getNameSpace()
+  public function getNamespace()
   {
-    return $this->nameSpace;
+    return $this->namespace;
   }
 
   /**
    * @param mixed $nameSpace
    */
-  public function setNameSpace($nameSpace)
+  public function setNamespace($namespace)
   {
-    $this->nameSpace = $nameSpace;
+    $this->namespace = $namespace;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getValue()
+  {
+    return $this->value;
+  }
+
+  /**
+   * @param mixed $value
+   */
+  public function setValue($value)
+  {
+    $this->value = $value;
   }
 
 }

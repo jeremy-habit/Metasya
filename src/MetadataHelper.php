@@ -30,17 +30,17 @@ class MetadataHelper
   private $filePath;
 
   /**
-   * @var
+   * @var boolean $displayErrors
    */
   private $displayErrors;
 
   /**
-   * @var
+   * @var ToolBox $toolBox
    */
   private $toolBox;
 
   /**
-   * @var
+   * @var SchemataManager $schemataManager
    */
   private $schemataManager;
 
@@ -50,7 +50,7 @@ class MetadataHelper
   private $useProvidedExiftool;
 
   /**
-   * @var
+   * @var string $exiftoolPath
    */
   private $exiftoolPath;
 
@@ -288,7 +288,7 @@ class MetadataHelper
   }
 
   /**
-   * @return mixed
+   * @return SchemataManager
    */
   public function getSchemataManager()
   {
@@ -296,7 +296,7 @@ class MetadataHelper
   }
 
   /**
-   * @param mixed $schemataManager
+   * @param SchemataManager $schemataManager
    */
   public function setSchemataManager($schemataManager)
   {
