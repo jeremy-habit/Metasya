@@ -499,10 +499,131 @@ Metasya offers a system of schemata in order to easly manage metadata of files.
 
 * **What is a schema ?** A schema can be a JSON file and/or an object which contains information like the sortcut of the schema, metadata properties, namespace, description ... There are two kinds of schema : the default schemata which are nominated by Metasya, and the user's schemata which are created by the user.
 
-  ​
+
 
 * **What is the utility of this system ?** With this system, you can use several defaults schemata in order to read a lot of metadata for example. This sytem it's a saving of time : you can just write one word (the shema's shortcut) instead of the list of all metadata you want to read.
 
+
+
+
+#### How to add a custom schema as JSON file
+
+Note that you have the possibility to create your own schemata and to stock them in the desired folder. Thus, schemeta created in a project can be used in an other one !
+
+
+
+*Example of a valid schema as JSON file :*
+
+```json
+{
+  "shortcut": "cosmos",
+  "description": "Schema to get some metadata",
+  "namespace": "XMP-dc",
+  "properties": {
+    "Title": {
+      "value": null,
+      "namespace": null
+    },
+    "Creator": {
+      "value": "Mr nobody",
+      "namespace": null
+    },
+    "Description": {
+      "value": null,
+      "namespace": null
+    },
+    "FileSize": {
+      "value": null,
+      "namespace": "System"
+    }
+  }
+}
+```
+
+
+
+#### The SchemataManager
+
+First you need to know that the SchemataManager is a singleton : it means that only one instance of this class can be created. **How it works ?** The SchemataManager will automotically convert all the JSON file inside the both directory user and default shemata to schema objects. Next these schema objects will be added to the list of schemata of the SchemataManager.
+
+
+
+You can get it like follow :
+
+```php
+$schemataManager = SchemataManager::getInstance();
+```
+
+or directly via the MetadataHelper class :
+
+```php
+$metadataHelper->getSchemataManager();
+```
+
+
+
+##### Get all schemata as objects (default and user)
+
+```php
+$metadataHelper->getSchemataManager()->getSchemata();
+
+/* Result :
+
+  array (size=1)
+    0 => 
+      object(MagicMonkey\Metasya\Schema\Schema)[4]
+        private 'shortcut' => string 'xmp-test' (length=8)
+        private 'namespace' => string 'XMP-dc' (length=6)
+        private 'description' => string '' (length=0)
+        private 'properties' => 
+          array (size=2)
+            0 => 
+              object(MagicMonkey\Metasya\Schema\Property)[5]
+                ...
+            1 => 
+              object(MagicMonkey\Metasya\Schema\Property)[6]
+                ...
+
+*/
+```
+
+
+
+##### The path of the user's schemata's folder
+
+By default, the user's schemata's folder is called "**metasyaSchemata**" and it's created at the root of your project. However, you can change it like following :
+
+```php
+$metadataHelper->getSchemataManager()->setUserSchemataFolderPath("my/new/path");
+```
+
+
+
+If the old folder "**metasyaSchemata**" contains json files as schemata, all these files will be copied inside the new folder. Next, if you want to delete the folder "**metasyaSchemata**" and it's content, you can do it manually (safe and secure) or you can ask to Metasya to do it automatically. Indeed, you can inform a boolean with the value "true" as parameter which indicates to remove the older folder and it's content after the copy :
+
+```php
+$metadataHelper->getSchemataManager()->setUserSchemataFolderPath("my/new/path", true);
+```
+
+
+
+##### Test if a string is a shortcut of schema
+
+You can test if a string is associated to a schema with the function *isSchemaShortcut()*. This last one return true of false according the shortcut value given as parameter :
+
+```php
+$metadataHelper->getSchemataManager()->isSchemaShortcut("a-shortcut");
+```
+
+
+
+##### Get a schema as object from its shortcut
+
+You can get a schema as object with the function *getSchemaFromShortcut()* :
+
+```php
+$metadataHelper->getSchemataManager()->getSchemaFromShortcut("a-shortcut");
+```
 
 
 
@@ -611,129 +732,6 @@ $mySchemaObject->deploy();
 ```
 
 The execution of this function will create the json of the schema and will add it inside the user's schemata's folder. Its execution will also add the schema object to schemata list of the the SchemataManger. Note that this funcion only works if the shortcut of the schema is not already used. It means that you can update a schema via this function. Modify json files instead.
-
-
-
-#### The SchemataManager
-
-First you need to know that the SchemataManager is a singleton : it means that only one instance of this class can be created.
-
-You can get it like follow :
-
-```php
-$schemataManager = SchemataManager::getInstance();
-```
-
-or directly via the MetadataHelper class :
-
-```php
-$metadataHelper->getSchemataManager();
-```
-
-
-
-#### Get all schemata as objects (default and user)
-
-```php
-$metadataHelper->getSchemataManager()->getSchemata();
-
-/* Result :
-
-  array (size=1)
-    0 => 
-      object(MagicMonkey\Metasya\Schema\Schema)[4]
-        private 'shortcut' => string 'xmp-test' (length=8)
-        private 'namespace' => string 'XMP-dc' (length=6)
-        private 'description' => string '' (length=0)
-        private 'properties' => 
-          array (size=2)
-            0 => 
-              object(MagicMonkey\Metasya\Schema\Property)[5]
-                ...
-            1 => 
-              object(MagicMonkey\Metasya\Schema\Property)[6]
-                ...
-
-*/
-```
-
-
-
-#### The path of the user's schemata's folder
-
-By default, the user's schemata's folder is called "**metasyaSchemata**" and it's created at the root of your project. However, you can change it like following :
-
-```php
-$metadataHelper->getSchemataManager()->setUserSchemataFolderPath("my/new/path");
-```
-
-
-
-If the old folder "**metasyaSchemata**" contains json files as schemata, all these files will be copied inside the new folder. Next, if you want to delete the folder "**metasyaSchemata**" and it's content, you can do it manually (safe and secure) or you can ask to Metasya to do it automatically. Indeed, you can inform a boolean with the value "true" as parameter which indicates to remove the older folder and it's content after the copy :
-
-```php
-$metadataHelper->getSchemataManager()->setUserSchemataFolderPath("my/new/path", true);
-```
-
-
-
-#### Test if a string is a shortcut of schema
-
-You can test if a string is associated to a schema with the function *isSchemaShortcut()*. This last one return true of false according the shortcut value given as parameter :
-
-```php
-$metadataHelper->getSchemataManager()->isSchemaShortcut("a-shortcut");
-```
-
-
-
-#### Get a schema as object from its shortcut
-
-You can get a schema as object with the function *getSchemaFromShortcut()* :
-
-```php
-$metadataHelper->getSchemataManager()->getSchemaFromShortcut("a-shortcut");
-```
-
-
-
-#### How to add a custom schema as JSON file
-
-Note that you have the possibility to create your own schemata and to stock them in the desired folder. Thus, schemeta created in a project can be used in an other one !
-
-
-
-*Example of a valid schema as JSON file :*
-
-```json
-{
-  "shortcut": "cosmos",
-  "description": "Schema to get some metadata",
-  "namespace": "XMP-dc",
-  "properties": {
-    "Title": {
-      "value": null,
-      "namespace": null
-    },
-    "Creator": {
-      "value": "Mr nobody",
-      "namespace": null
-    },
-    "Description": {
-      "value": null,
-      "namespace": null
-    },
-    "FileSize": {
-      "value": null,
-      "namespace": "System"
-    }
-  }
-}
-```
-
-
-
-
 
 
 
