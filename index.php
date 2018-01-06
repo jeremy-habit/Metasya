@@ -13,10 +13,11 @@ Autoloader::register();
 
 $metadataHelper = new MetadataHelper("data/images/photo1.jpg", false);
 $metadataHelper->setFilePath("data/images/paysage.jpg");
+$metadataHelper->getSchemataManager()->setUserSchemataFolderPath("coucou/test", true);
 
 
 $titleProperty = new Property("Title");
-$creatorProperty = new Property("Creator", "", "Mr nobody");
+$creatorProperty = new Property("Creator", null, "Mr nobody");
 $descriptionProperty = new Property("Description");
 $sizeProperty = new Property("FileSize", "System");
 
@@ -26,6 +27,9 @@ $mySchemaObject->addProperty($creatorProperty);
 $mySchemaObject->addProperty($descriptionProperty);
 $mySchemaObject->addProperty($sizeProperty);
 
-var_dump($mySchemaObject->buildTargetedMetadata());
-$mySchemaObject->removeProperty($creatorProperty);
-var_dump($mySchemaObject->getProperties());
+
+$userxmp = $metadataHelper->getSchemataManager()->getSchemaFromShortcut("USER-xmp");
+var_dump($userxmp);
+var_dump($userxmp->getProperties());
+$userxmp->removeProperty(0);
+var_dump($metadataHelper->getSchemataManager()->getSchemaFromShortcut("USER-xmp"));

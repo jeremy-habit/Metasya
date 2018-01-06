@@ -47,14 +47,6 @@ class Property
   }
 
   /**
-   * @param mixed $tagName
-   */
-  public function setTagName($tagName)
-  {
-    $this->tagName = $tagName;
-  }
-
-  /**
    * @return mixed
    */
   public function getNamespace()
@@ -63,27 +55,11 @@ class Property
   }
 
   /**
-   * @param mixed $nameSpace
-   */
-  public function setNamespace($namespace)
-  {
-    $this->namespace = $namespace;
-  }
-
-  /**
    * @return mixed
    */
   public function getValue()
   {
     return $this->value;
-  }
-
-  /**
-   * @param mixed $value
-   */
-  public function setValue($value)
-  {
-    $this->value = $value;
   }
 
 }

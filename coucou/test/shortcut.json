@@ -1,0 +1,23 @@
+{
+  "shortcut": "shortcut",
+  "description": "Schema to get some metadata",
+  "namespace": "XMP-dc",
+  "properties": {
+    "Title": {
+      "value": null,
+      "namespace": null
+    },
+    "Creator": {
+      "value": "Mr nobody",
+      "namespace": null
+    },
+    "Description": {
+      "value": null,
+      "namespace": null
+    },
+    "FileSize": {
+      "value": null,
+      "namespace": "System"
+    }
+  }
+}

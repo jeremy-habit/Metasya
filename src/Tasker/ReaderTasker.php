@@ -45,6 +45,7 @@ class ReaderTasker extends AbstractTasker
         }
       }
     }
+    /*var_dump($stringifiedTargetedMetadata);*/
     return $stringifiedTargetedMetadata;
   }
 

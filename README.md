@@ -520,18 +520,6 @@ $sizeProperty = new Property("FileSize", "System");
 
 
 
-##### Modify the tag name, the namespace and the value
-
-You can change these three attributes by using the setters like following :
-
-```php
-$mySchemaObject->setNamespace("new-namespace");
-$mySchemaObject->setTagName("new-tagname");
-$mySchemaObject->setValue("new-value");
-```
-
-
-
 #### The class Schema
 
 A Schema object is constituted by a shortcut, a global namespace and a list of properties. The shortcut allows to make a reference to the schema. If the Schema is used to read metadata, the global namespace is used before every property  which has not its own namespace. It's practical when a lot of properties have the same namespace because it's not necessary to inform it during the creation of the property.
@@ -606,39 +594,23 @@ array (size=4)
 Obviously you can add and remove a property to a schema like following :
 
 ```php
-$mySchemaObject->addProperty(new Property(""));
+$mySchemaObject->addProperty(new Property("Title"));
 $mySchemaObject->removeProperty($creatorProperty);
+/* or with the index */
+$mySchemaObject->removeProperty(0);
 ```
 
 
 
-##### Modify the namespace, the shortcut and the description 
+##### Deploy/add a schema object as json
 
-You can change these three attributes by using the setters like following :
+You can deploy a schema object as a json file like following :
 
 ```php
-$mySchemaObject->setNamespace("new-namespace");
-$mySchemaObject->setShortcut("new-shortcut");
-$mySchemaObject->setDescription("new-description");
+$mySchemaObject->deploy();
 ```
 
-
-
-##### Synchronize a schema object with a JSON file
-
-
-
-
-
-#### Create a schema as JSON file
-
-
-
-that you also have the possibility to create your own schemata and to stock them in the desired folder. Thus, schemeta created in a project can be used in an other one.
-
-##### a valid json file
-
-
+The execution of this function will create the json of the schema and will add it inside the user's schemata's folder. Its execution will also add the schema object to schemata list of the the SchemataManger. Note that this funcion only works if the shortcut of the schema is not already used. It means that you can update a schema via this function. Modify json files instead.
 
 
 
@@ -725,9 +697,41 @@ $metadataHelper->getSchemataManager()->getSchemaFromShortcut("a-shortcut");
 
 
 
-#### Manage a schema as object
+#### How to add a custom schema as JSON file
 
-remove, update, add as json
+Note that you have the possibility to create your own schemata and to stock them in the desired folder. Thus, schemeta created in a project can be used in an other one !
+
+
+
+*Example of a valid schema as JSON file :*
+
+```json
+{
+  "shortcut": "cosmos",
+  "description": "Schema to get some metadata",
+  "namespace": "XMP-dc",
+  "properties": {
+    "Title": {
+      "value": null,
+      "namespace": null
+    },
+    "Creator": {
+      "value": "Mr nobody",
+      "namespace": null
+    },
+    "Description": {
+      "value": null,
+      "namespace": null
+    },
+    "FileSize": {
+      "value": null,
+      "namespace": "System"
+    }
+  }
+}
+```
+
+
 
 
 

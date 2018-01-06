@@ -55,6 +55,41 @@ class SchemataManager
 
   }
 
+  public function deploy($schema)
+  {
+    if ($schema instanceof Schema) {
+      if (!$this->isSchemaShortcut($schema->getShortcut())) {
+        // creation du nouveau json
+        $properties = array();
+        foreach ($schema->getProperties() as $property) {
+          $properties[$property->getTagName()] = array(
+            "value" => $property->getValue(),
+            "namespace" => $property->getNamespace()
+          );
+        }
+        $jsonSchema = array(
+          "shortcut" => $schema->getShortcut(),
+          "description" => $schema->getDescription(),
+          "namespace" => $schema->getNamespace(),
+          "properties" => $properties
+        );
+        $fp = fopen($this->userSchemataFolderPath . ToolBox::DS . $schema->getShortcut() . '.json', 'w');
+        fwrite($fp, json_encode($jsonSchema));
+        fclose($fp);
+        array_push($this->schemata, $schema);
+      } else {
+        return "The shortcut " . $schema->getShortcut() . " is already used by an other one schema !";
+      }
+    }
+    return false;
+  }
+
+
+  /**
+   * @param $string
+   * @param bool $returnSchema
+   * @return bool|Schema
+   */
   public function isSchemaShortcut($string, $returnSchema = false)
   {
     foreach ($this->schemata as $schema) {
@@ -65,9 +100,14 @@ class SchemataManager
     return false;
   }
 
-  public function getSchemaFromShortcut($schortcut)
+
+  /**
+   * @param $shortcut
+   * @return bool|Schema
+   */
+  public function getSchemaFromShortcut($shortcut)
   {
-    return $this->isSchemaShortcut($schortcut, true);
+    return $this->isSchemaShortcut($shortcut, true);
   }
 
 
@@ -97,9 +137,10 @@ class SchemataManager
           // adding of properties
           foreach ($json["properties"] as $tag => $dataTag) {
             $schema->addProperty(new Property(
-              $tag,
-              isset($dataTag["value"]) ? $dataTag["value"] : "",
-              isset($dataTag["namespace"]) ? $dataTag["namespace"] : $json["namespace"]));
+                $tag,
+                isset($dataTag["namespace"]) ? $dataTag["namespace"] : $json["namespace"],
+                isset($dataTag["value"]) ? $dataTag["value"] : "")
+            );
           }
           // adding of this objet into the list of Schemata
           array_push($this->schemata, $schema);
@@ -133,7 +174,7 @@ class SchemataManager
     // if old folders exists
     if (is_dir($oldSchemataFolderPath)) {
       // move schemata in the nex folder(s)
-      $schemataJsonFiles = $this->toolbox->lsFiles(self::USER_SCHEMATA_FOLDER_PATH, array('json'));
+      $schemataJsonFiles = $this->toolbox->lsFiles($oldSchemataFolderPath, array('json'));
       if ($removeDefaultFolder) {
         foreach ($schemataJsonFiles as $schemataJsonFile) {
           rename($schemataJsonFile, $this->userSchemataFolderPath . ToolBox::DS . basename($schemataJsonFile));
@@ -172,14 +213,6 @@ class SchemataManager
   public function getSchemata()
   {
     return $this->schemata;
-  }
-
-  /**
-   * @param mixed $schemata
-   */
-  public function setSchemata($schemata)
-  {
-    $this->schemata = $schemata;
   }
 
 

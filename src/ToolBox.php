@@ -118,7 +118,7 @@ class ToolBox
   {
     if (file_exists($jsonFilePath)) {
       $stringifiedJson = file_get_contents($jsonFilePath);
-      return json_decode($stringifiedJson, true)[0];
+      return json_decode($stringifiedJson, true);
     }
     return null;
   }

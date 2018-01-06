@@ -38,7 +38,7 @@ class Schema
    */
   public function __construct($shortcut, $namespace, $description = null)
   {
-    $this->shortcut = $shortcut;
+    $this->shortcut = trim($shortcut);
     $this->namespace = $namespace;
     $this->description = $description;
     $this->properties = array();
@@ -77,20 +77,20 @@ class Schema
    */
   public function removeProperty($property)
   {
-    if (($key = array_search($property, $this->properties, true)) !== FALSE) {
-      unset($this->properties[$key]);
-      return true;
+    if ($property instanceof Property) {
+      if (($key = array_search($property, $this->properties, true)) !== FALSE) {
+        unset($this->properties[$key]);
+        return true;
+      }
+    } else {
+      unset($this->properties[$property]);
     }
     return false;
   }
 
   public function deploy()
   {
-    // create or update the json
-    if (SchemataManager::getInstance()->getSchemaFromShortcut($this->shortcut)) {
-
-    }
-
+    return SchemataManager::getInstance()->deploy($this);
   }
 
   /**
@@ -103,15 +103,6 @@ class Schema
   }
 
   /**
-   * @param null $namespace
-   */
-  public
-  function setNamespace($namespace)
-  {
-    $this->namespace = $namespace;
-  }
-
-  /**
    * @return null
    */
   public
@@ -120,20 +111,11 @@ class Schema
     return $this->description;
   }
 
-  /**
-   * @param null $description
-   */
-  public
-  function setDescription($description)
-  {
-    $this->description = $description;
-  }
 
   /**
-   * @return mixed
+   * @return array|Property[]
    */
-  public
-  function getProperties()
+  public function getProperties()
   {
     return $this->properties;
   }
@@ -145,15 +127,6 @@ class Schema
   function getShortcut()
   {
     return $this->shortcut;
-  }
-
-  /**
-   * @param mixed $shortcut
-   */
-  public
-  function setShortcut($shortcut)
-  {
-    $this->shortcut = $shortcut;
   }
 
 
