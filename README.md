@@ -1,4 +1,4 @@
-#Metasya
+# Metasya
 
 Metasya is a library allowing the management of embarked metadatas on diverse types of files, to manage the import of metadatas in an information system and the synchronization of the data between the information system and files with exiftool.
 
@@ -10,13 +10,12 @@ What is **Exiftool** ? Take a look here : [https://www.sno.phy.queensu.ca/~phil/
 
 1. You have to use [Composer](https://getcomposer.org/), a tool for dependency management in PHP :
 
-    ```bash
-    composer require magicmonkey/metasya
-    ```
+  ```bash
+  composer require magicmonkey/metasya
+  ```
+  Metasya is enregistred as package on Packagist : [https://packagist.org/packages/magicmonkey/metasya](https://packagist.org/packages/magicmonkey/metasya)
 
-    Metasya is enregistred as package on Packagist : [https://packagist.org/packages/magicmonkey/metasya](https://packagist.org/packages/magicmonkey/metasya)
-
-    ​
+  ​
 
 2. To activate the autoloader, you may need to type the following command into the command line :
 
@@ -731,16 +730,10 @@ You can deploy a schema object as a json file like following :
 $mySchemaObject->deploy();
 ```
 
-The execution of this function will create the json of the schema and will add it inside the user's schemata's folder. Its execution will also add the schema object to schemata list of the the SchemataManger. Note that this funcion only works if the shortcut of the schema is not already used. It means that you can update a schema via this function. Modify json files instead.
-
+The execution of this function will create the json of the schema and will add it inside the user's schemata's folder. Its execution will also add the schema object to schemata list of the the SchemataManager. Note that this funcion only works if the shortcut of the schema is not already used. It means that you can't update a schema via this function. Modify json files instead.
 
 
 
 #### The list of defaults schemata
 
-
-
-
-## UML
-
-![UML of PHP-Metadata-Manager Project](https://raw.githubusercontent.com/jeremy-habit/PHP-Metadata-Manager/master/documentation/PHP_METADATA_MANAGER.jpg)
+comming soon ...

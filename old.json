@@ -1,5 +1,5 @@
 {
-  "shortcut": "shortcut",
+  "shortcut": "cosmos",
   "description": "Schema to get some metadata",
   "namespace": "XMP-dc",
   "properties": {

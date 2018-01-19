@@ -17,26 +17,28 @@ class SchemataManager
 
   /**
    * $instance is private in order to implement the singleton pattern
+   *
+   * @var static $instance
    */
   private static $instance;
 
   /**
-   * @var
+   * @var Schema[] $schemata
    */
   protected $schemata;
 
   /**
-   * @var
+   * @var ToolBox $toolbox
    */
   protected $toolbox;
 
   /**
-   * @var
+   * @var String $userSchemataFolderPath
    */
   protected $userSchemataFolderPath;
 
   /**
-   * private constructor
+   * SchemataManager constructor.
    */
   private function __construct()
   {
@@ -57,6 +59,7 @@ class SchemataManager
 
   public function deploy($schema)
   {
+    /* TODO : rework ! */
     if ($schema instanceof Schema) {
       if (!$this->isSchemaShortcut($schema->getShortcut())) {
         // creation du nouveau json
@@ -129,33 +132,129 @@ class SchemataManager
     if (is_dir($folderPath)) {
       $schemataJsonFiles = $this->toolbox->lsFiles($folderPath, array('json'));
       foreach ($schemataJsonFiles as $schemataJsonFile) {
-        $json = $this->toolbox->extractJsonFromFile($schemataJsonFile);
-        // test shortcut && nameSpace exists
-        if (isset($json['shortcut']) && isset($json['namespace']) && isset($json["properties"]) && is_array($json["properties"])) {
-          // creation of an object Schema
-          $schema = new Schema(trim($json["shortcut"]), trim($json["namespace"]), isset($json["description"]) ? $json['description'] : "");
-          // adding of properties
-          foreach ($json["properties"] as $tag => $dataTag) {
-            $schema->addProperty(new Property(
-                $tag,
-                isset($dataTag["namespace"]) ? $dataTag["namespace"] : $json["namespace"],
-                isset($dataTag["value"]) ? $dataTag["value"] : "")
-            );
+
+        $schemaAsArray = $this->toolbox->getJsonFileAsArray($schemataJsonFile);
+
+        // creation of an empty object Schema
+        $schema = $this->createSchemaFromArray($schemaAsArray);
+
+        /*$schema = new Schema();
+        $validationResult = $this->isValidSchema($schemaAsArray);
+        $schema->setErrors($validationResult['errors']);
+        $schema->setIsValid($validationResult['valid']);
+        if ($schema->isValid()) {
+          // setting description and shortcut
+
+          // adding of metadata
+          foreach ($schemaAsArray['metadata'] as $metadataGroup) {
+            foreach ($metadataGroup["properties"] as $tagName => $content) {
+              $schema->addMetadata(new Metadata($tagName, $metadataGroup['namespace'], $content['shortcut']));
+            }
           }
-          // adding of this objet into the list of Schemata
-          array_push($this->schemata, $schema);
-        }
+        }*/
+        // adding of this objet into the list of Schemata
+        array_push($this->schemata, $schema);
       }
     }
   }
 
-  private function synchronize_Default_Schemata()
+  /**
+   * Allows to test if a schema as array is valid or not
+   *
+   * @param $schemaAsArray
+   * @return Schema
+   */
+  private function createSchemaFromArray($schemaAsArray)
+  {
+    $newSchema = new Schema();
+    $newSchema->setSchemaAsArray($schemaAsArray);
+    $newSchema->setDescription($schemaAsArray['description']);
+    // shortcut required
+    if (!isset($schemaAsArray['shortcut'])) {
+      $newSchema->setIsValid(false);
+      $newSchema->addError("Schema's shortcut is missing.");
+    } else {
+      $newSchema->setShortcut($schemaAsArray['shortcut']);
+    }
+    // metadata required
+    if (!isset($schemaAsArray['metadata']) || !is_array($schemaAsArray["metadata"])) {
+      $newSchema->setIsValid(false);
+      $newSchema->addError("Schema's metadata list is missing or is not an array.");
+    } else {
+      foreach ($schemaAsArray['metadata'] as $index => $metadataGroup) {
+        // namespace required
+        if (!isset($metadataGroup['namespace'])) {
+          $newSchema->setIsValid(false);
+          $newSchema->addError("The namespace of the metadata's group at the index " . $index . " is missing.");
+        } else {
+          // properties required
+          if (!isset($metadataGroup['properties']) || !is_array($metadataGroup['properties'])) {
+            $newSchema->setIsValid(false);
+            $newSchema->addError("The properties list of the metadata's group at the index " . $index . " is missing or is not an array.");
+          } else {
+            foreach ($metadataGroup['properties'] as $tagName => $content) {
+              // shortcut required
+              if (!isset($content['shortcut'])) {
+                $newSchema->setIsValid(false);
+                $newSchema->addError("The shortcut of the property " . $tagName . " of the metadata's group at the index " . $index . " is missing.");
+              } else {
+                $newSchema->addMetadata(new Metadata($tagName, $metadataGroup['namespace'], $content['shortcut']));
+              }
+            }
+          }
+        }
+      }
+    }
+    return $newSchema;
+
+
+    /* $result = array('valid' => true, 'errors' => array());
+     // shortcut required
+     if (!isset($schemaAsArray['shortcut'])) {
+       $result['valid'] = false;
+       array_push($result['message'], "Schema's shortcut is missing.");
+     }
+     // metadata required
+     if (!isset($schemaAsArray['metadata']) || !is_array($schemaAsArray["metadata"])) {
+       $result['valid'] = false;
+       array_push($result['message'], "Schema's metadata list is missing or is not an array.");
+     } else {
+       foreach ($schemaAsArray['metadata'] as $index => $metadataGroup) {
+         // namespace required
+         if (!isset($metadataGroup['namespace'])) {
+           $result['valid'] = false;
+           array_push($result['message'], "The namespace of the metadata's group at the index " . $index . " is missing.");
+         }
+         // properties required
+         if (!isset($metadataGroup['properties']) || !is_array($metadataGroup['properties'])) {
+           $result['valid'] = false;
+           array_push($result['message'], "The properties list of the metadata's group at the index " . $index . " is missing or is not an array.");
+         } else {
+           foreach ($metadataGroup['properties'] as $tagName => $content) {
+             // shortcut required
+             if (!isset($content['shortcut'])) {
+               $result['valid'] = false;
+               array_push($result['message'], "The shortcut of the property " . $tagName . " of the metadata's group at the index " . $index . " is missing.");
+             }
+           }
+         }
+       }
+     }
+
+    return $result;
+    */
+
+  }
+
+  private
+  function synchronize_Default_Schemata()
   {
     $this->convert_Json_File_To_Schema_Object(self::DEFAULT_SCHEMATA_FOLDER_PATH);
   }
 
 
-  private function synchronize_User_Schemata()
+  private
+  function synchronize_User_Schemata()
   {
     $this->convert_Json_File_To_Schema_Object(self::USER_SCHEMATA_FOLDER_PATH);
   }
@@ -165,7 +264,8 @@ class SchemataManager
    * @param string $oldSchemataFolderPath
    * @param bool $removeDefaultFolder
    */
-  private function change_User_Schemata_Folder($oldSchemataFolderPath, $removeDefaultFolder = false)
+  private
+  function change_User_Schemata_Folder($oldSchemataFolderPath, $removeDefaultFolder = false)
   {
     // creation of the new folder(s)
     if (!is_dir($this->userSchemataFolderPath)) {
@@ -191,7 +291,8 @@ class SchemataManager
   /**
    * @return mixed
    */
-  public function getUserSchemataFolderPath()
+  public
+  function getUserSchemataFolderPath()
   {
     return $this->userSchemataFolderPath;
   }
@@ -200,7 +301,8 @@ class SchemataManager
    * @param mixed $userSchemataFolderPath
    * @param bool $removeDefaultOlder
    */
-  public function setUserSchemataFolderPath($userSchemataFolderPath, $removeDefaultOlder = false)
+  public
+  function setUserSchemataFolderPath($userSchemataFolderPath, $removeDefaultOlder = false)
   {
     $oldSchemataFolderPath = $this->userSchemataFolderPath;
     $this->userSchemataFolderPath = $userSchemataFolderPath;

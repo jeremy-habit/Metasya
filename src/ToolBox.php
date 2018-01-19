@@ -77,7 +77,7 @@ class ToolBox
     if (!in_array($dir, $bannedValue) && is_dir($dir)) {
       $dirAndFiles = array_diff(scandir($dir), $bannedValue);
       foreach ($dirAndFiles as $dirOrFile) {
-        if ($dirOrFile != "." && $dirOrFile != "..")  { /* normally impossible thanks to array_diff above but ... */
+        if ($dirOrFile != "." && $dirOrFile != "..") { /* normally impossible thanks to array_diff above but ... */
           if (is_dir($dir . self::DS . $dirOrFile))
             $this->recursiveRmdir($dir . self::DS . $dirOrFile);
           else
@@ -114,7 +114,7 @@ class ToolBox
    * @param $jsonFilePath
    * @return null|array
    */
-  public function extractJsonFromFile($jsonFilePath)
+  public function getJsonFileAsArray($jsonFilePath)
   {
     if (file_exists($jsonFilePath)) {
       $stringifiedJson = file_get_contents($jsonFilePath);

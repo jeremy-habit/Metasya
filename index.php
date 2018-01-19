@@ -2,8 +2,6 @@
 
 
 use MagicMonkey\Metasya\MetadataHelper;
-use MagicMonkey\Metasya\Schema\Schema;
-use MagicMonkey\Metasya\Schema\Property;
 
 require_once 'Autoloader.php';
 Autoloader::register();
@@ -13,6 +11,10 @@ Autoloader::register();
 
 $metadataHelper = new MetadataHelper("data/images/photo1.jpg", false);
 $metadataHelper->setFilePath("data/images/paysage.jpg");
+
+$metadataHelper->read(["cosmos"]);
+
+/*
 $metadataHelper->getSchemataManager()->setUserSchemataFolderPath("coucou/test", true);
 
 
@@ -32,4 +34,4 @@ $userxmp = $metadataHelper->getSchemataManager()->getSchemaFromShortcut("USER-xm
 var_dump($userxmp);
 var_dump($userxmp->getProperties());
 $userxmp->removeProperty(0);
-var_dump($metadataHelper->getSchemataManager()->getSchemaFromShortcut("USER-xmp"));
+var_dump($metadataHelper->getSchemataManager()->getSchemaFromShortcut("USER-xmp"));*/

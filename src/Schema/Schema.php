@@ -16,9 +16,14 @@ class Schema
   private $shortcut;
 
   /**
-   * @var string $namespace
+   * @var boolean $isValid
    */
-  private $namespace;
+  private $isValid;
+
+  /**
+   * @var String[] $errors
+   */
+  private $errors;
 
   /**
    * @var string $description
@@ -26,64 +31,65 @@ class Schema
   private $description;
 
   /**
-   * @var Property[] $properties
+   * @var Metadata[] $metadata
    */
-  private $properties;
+  private $metadata;
+
+  /**
+   * @var array $schemaAsArray
+   */
+  private $schemaAsArray;
 
   /**
    * Schema constructor.
    * @param $shortcut
-   * @param $namespace
-   * @param $description
+   * @param string $description
+   * @param bool $isValid
    */
-  public function __construct($shortcut, $namespace, $description = null)
+  public function __construct($shortcut = null, $description = "", $isValid = true)
   {
+    $this->isValid = $isValid;
+    $this->errors = array();
     $this->shortcut = trim($shortcut);
-    $this->namespace = $namespace;
     $this->description = $description;
-    $this->properties = array();
+    $this->metadata = array();
   }
 
   public function buildTargetedMetadata()
   {
     $targetedMetadata = array();
-    foreach ($this->properties as $property) {
-      if (!empty(trim($property->getNamespace()))) {
-        $metadataTag = $property->getNamespace() . ":" . $property->getTagName();
-      } else {
-        $metadataTag = $this->getNamespace() . ":" . $property->getTagName();
-      }
-      array_push($targetedMetadata, $metadataTag);
+    foreach ($this->metadata as $metadata) {
+      array_push($targetedMetadata, $metadata->__toString());
     }
     return $targetedMetadata;
   }
 
   /**
-   * @param $property
+   * @param $metadata
    * @return bool
    */
-  public function addProperty($property)
+  public function addMetadata($metadata)
   {
-    if ($property instanceof Property) {
-      array_push($this->properties, $property);
+    if ($metadata instanceof Metadata) {
+      array_push($this->metadata, $metadata);
       return true;
     }
     return false;
   }
 
   /**
-   * @param $property
+   * @param $metadata
    * @return bool
    */
-  public function removeProperty($property)
+  public function removeMetadata($metadata)
   {
-    if ($property instanceof Property) {
-      if (($key = array_search($property, $this->properties, true)) !== FALSE) {
-        unset($this->properties[$key]);
+    if ($metadata instanceof Metadata) {
+      if (($key = array_search($metadata, $this->metadata, true)) !== FALSE) {
+        unset($this->metadata[$key]);
         return true;
       }
     } else {
-      unset($this->properties[$property]);
+      unset($this->metadata[$metadata]);
     }
     return false;
   }
@@ -96,37 +102,106 @@ class Schema
   /**
    * @return null
    */
-  public
-  function getNamespace()
-  {
-    return $this->namespace;
-  }
-
-  /**
-   * @return null
-   */
-  public
-  function getDescription()
+  public function getDescription()
   {
     return $this->description;
   }
 
 
   /**
-   * @return array|Property[]
+   * @return array|Metadata[]
    */
-  public function getProperties()
+  public function getMetadata()
   {
-    return $this->properties;
+    return $this->metadata;
+  }
+
+  /**
+   * @return array
+   */
+  public function getSchemaAsArray()
+  {
+    return $this->schemaAsArray;
+  }
+
+  /**
+   * @param array $schemaAsArray
+   */
+  public function setSchemaAsArray($schemaAsArray)
+  {
+    $this->schemaAsArray = $schemaAsArray;
+  }
+
+  /**
+   * @param string $shortcut
+   */
+  public function setShortcut($shortcut)
+  {
+    $this->shortcut = $shortcut;
+  }
+
+  /**
+   * @param string $description
+   */
+  public function setDescription($description)
+  {
+    $this->description = $description;
+  }
+
+  /**
+   * @param Metadata[] $metadata
+   */
+  public function setMetadata($metadata)
+  {
+    $this->metadata = $metadata;
   }
 
   /**
    * @return mixed
    */
-  public
-  function getShortcut()
+  public function getShortcut()
   {
     return $this->shortcut;
+  }
+
+  /**
+   * @return bool
+   */
+  public function isValid()
+  {
+    return $this->isValid;
+  }
+
+  /**
+   * @param bool $isValid
+   */
+  public function setIsValid($isValid)
+  {
+    $this->isValid = $isValid;
+  }
+
+  /**
+   * @return String[]
+   */
+  public function getErrors()
+  {
+    return $this->errors;
+  }
+
+  /**
+   * @param String[] $errors
+   */
+  public function setErrors($errors)
+  {
+    $this->errors = $errors;
+  }
+
+  /**
+   * @param $error
+   */
+  public function addError($error)
+  {
+    array_push($this->errors, $error);
   }
 
 

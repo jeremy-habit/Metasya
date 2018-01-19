@@ -4,38 +4,43 @@ namespace MagicMonkey\Metasya\Schema;
 
 
 /**
- * Class Property
+ * Class Metadata
  * @package MagicMonkey\Metasya\Schema
  */
-class Property
+class Metadata
 {
 
   /**
-   * @var
+   * @var string $tagName
    */
   private $tagName;
 
   /**
-   * @var
+   * @var string $shortcut
+   */
+  private $shortcut;
+
+  /**
+   * @var string $namespace
    */
   private $namespace;
 
   /**
-   * @var
-   */
-  private $value;
-
-  /**
-   * Property constructor.
+   * Metadata constructor.
    * @param $tagName
-   * @param null $value
    * @param null $namespace
+   * @param $shortcut
    */
-  public function __construct($tagName, $namespace = null, $value = null)
+  public function __construct($tagName, $namespace, $shortcut)
   {
     $this->tagName = $tagName;
-    $this->value = $value;
     $this->namespace = $namespace;
+    $this->shortcut = $shortcut;
+  }
+
+  public function __toString()
+  {
+    return $this->namespace . ":" . $this->tagName;
   }
 
   /**
@@ -57,9 +62,10 @@ class Property
   /**
    * @return mixed
    */
-  public function getValue()
+  public function getShortcut()
   {
-    return $this->value;
+    return $this->shortcut;
   }
+
 
 }

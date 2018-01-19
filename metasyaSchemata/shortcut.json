@@ -1,0 +1,28 @@
+{
+  "shortcut": "cosmos",
+  "description": "Schema to get some metadata",
+  "metadata": [
+    {
+      "namespace": "XMP-dc",
+      "properties": {
+        "Title": {
+          "shortcut": "t"
+        },
+        "Creator": {
+          "shortcut": "c"
+        },
+        "Description": {
+          "shortcut": "d"
+        }
+      }
+    },
+    {
+      "namespace": "System",
+      "properties": {
+        "FileSize": {
+          "shortcut": "fs"
+        }
+      }
+    }
+  ]
+}
