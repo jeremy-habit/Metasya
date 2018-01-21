@@ -27,6 +27,7 @@ class Metadata
 
   /**
    * Metadata constructor.
+   *
    * @param $tagName
    * @param null $namespace
    * @param $shortcut
@@ -66,6 +67,5 @@ class Metadata
   {
     return $this->shortcut;
   }
-
 
 }

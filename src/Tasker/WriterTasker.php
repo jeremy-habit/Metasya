@@ -15,10 +15,6 @@ class WriterTasker extends AbstractTasker
   /* ### PRIVATE FUNCTIONS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
-  /**
-   * @param $targetedMetadata
-   * @return mixed
-   */
   private function untarget_Existing_Metadata($targetedMetadata)
   {
     $newTargetedMetadata = $targetedMetadata;
@@ -77,7 +73,7 @@ class WriterTasker extends AbstractTasker
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
   /**
-   * Add or edit metadata tag value.
+   * Add or edits metadata tag value.
    * @param null $targetedMetadata
    * @param bool $replace
    * @param bool $overwrite
@@ -93,7 +89,7 @@ class WriterTasker extends AbstractTasker
   }
 
   /**
-   * Add or edit metadata tag value from a json file.
+   * Add or edits metadata tag value from a json file.
    * @param null $jsonFilePath
    * @param bool $replace
    * @param bool $overwrite
@@ -109,7 +105,7 @@ class WriterTasker extends AbstractTasker
   }
 
   /**
-   * Add or edit metadata tag value from json.
+   * Add or edits metadata tag value from json.
    * @param $json
    * @param bool $replace
    * @param bool $overwrite

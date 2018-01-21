@@ -11,7 +11,12 @@ class Schema
 {
 
   /**
-   * @var string $shortcut
+   * @var String $fileName
+   */
+  private $fileName;
+
+  /**
+   * @var String $shortcut
    */
   private $shortcut;
 
@@ -26,7 +31,7 @@ class Schema
   private $errors;
 
   /**
-   * @var string $description
+   * @var String $description
    */
   private $description;
 
@@ -43,18 +48,36 @@ class Schema
   /**
    * Schema constructor.
    * @param $shortcut
-   * @param string $description
-   * @param bool $isValid
+   * @param String $description
    */
-  public function __construct($shortcut = null, $description = "", $isValid = true)
+  public function __construct($shortcut = "", $description = "")
   {
-    $this->isValid = $isValid;
     $this->errors = array();
+    $this->metadata = array();
     $this->shortcut = trim($shortcut);
     $this->description = $description;
-    $this->metadata = array();
+    $this->isValid = $this->checkValidation();
   }
 
+  /**
+   * Allow to check the validation of the schema
+   *
+   * @return bool
+   */
+  private function checkValidation()
+  {
+    if (!empty($this->shortcut) && count($this->errors) == 0) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Build an array of targeted metadata according to the metadata list
+   * example : ["XMP-dc:Title", "System:FileSize"] ...
+   *
+   * @return array
+   */
   public function buildTargetedMetadata()
   {
     $targetedMetadata = array();
@@ -94,19 +117,19 @@ class Schema
     return false;
   }
 
-  public function deploy()
-  {
-    return SchemataManager::getInstance()->deploy($this);
-  }
+  /*
+    public function deploy()
+    {
+      return SchemataManager::getInstance()->deploy($this);
+    }*/
 
   /**
-   * @return null
+   * @return String
    */
   public function getDescription()
   {
     return $this->description;
   }
-
 
   /**
    * @return array|Metadata[]
@@ -133,15 +156,16 @@ class Schema
   }
 
   /**
-   * @param string $shortcut
+   * @param String $shortcut
    */
   public function setShortcut($shortcut)
   {
     $this->shortcut = $shortcut;
+    $this->setIsValid($this->checkValidation());
   }
 
   /**
-   * @param string $description
+   * @param String $description
    */
   public function setDescription($description)
   {
@@ -157,7 +181,7 @@ class Schema
   }
 
   /**
-   * @return mixed
+   * @return String
    */
   public function getShortcut()
   {
@@ -175,7 +199,7 @@ class Schema
   /**
    * @param bool $isValid
    */
-  public function setIsValid($isValid)
+  private function setIsValid($isValid)
   {
     $this->isValid = $isValid;
   }
@@ -194,15 +218,32 @@ class Schema
   public function setErrors($errors)
   {
     $this->errors = $errors;
+    $this->setIsValid($this->checkValidation());
   }
 
   /**
-   * @param $error
+   * @param String $error
    */
   public function addError($error)
   {
     array_push($this->errors, $error);
+    $this->setIsValid($this->checkValidation());
   }
 
+  /**
+   * @return String
+   */
+  public function getFileName()
+  {
+    return $this->fileName;
+  }
+
+  /**
+   * @param String $fileName
+   */
+  public function setFileName($fileName)
+  {
+    $this->fileName = $fileName;
+  }
 
 }

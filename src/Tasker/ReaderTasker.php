@@ -33,43 +33,25 @@ class ReaderTasker extends AbstractTasker
       $targetedMetadataLength = count($targetedMetadata);
       $i = 0;
       foreach ($targetedMetadata as $metadataTag) {
-        /* if ($metadataTag instanceOf Schema && $metadataTag->isValid()) {
-           $stringifiedTargetedMetadata .= $this->stringify_Targeted_Metadata($metadataTag->buildTargetedMetadata(), $exclusion);
-         }
-         if (($schema = $this->schemataManager->isSchemaShortcut($metadataTag, true)) instanceof Schema && $schema->isValid()) {
-           $stringifiedTargetedMetadata .= $this->stringify_Targeted_Metadata($schema->buildTargetedMetadata(), $exclusion);
-         } else {
-           $stringifiedTargetedMetadata .= $prefix . $metadataTag;
-         }*/
-
-        if ($metadataTag instanceOf Schema && $metadataTag->isValid()) {
-          $stringifiedTargetedMetadata .= $this->stringify_Targeted_Metadata($metadataTag->buildTargetedMetadata(), $exclusion);
-        }
-
-        if (($schema = $this->schemataManager->isSchemaShortcut($metadataTag, true)) instanceof Schema && $schema->isValid()) {
-          $stringifiedTargetedMetadata .= $this->stringify_Targeted_Metadata($schema->buildTargetedMetadata(), $exclusion);
-        }
-
-        {
-          $stringifiedTargetedMetadata .= $prefix . $metadataTag;
-        }
-
-
-        if ($metadataTag instanceOf Schema || ($schema = $this->schemataManager->isSchemaShortcut($metadataTag, true)) instanceof Schema) {
-
+        if ($metadataTag instanceOf Schema) {
           if ($metadataTag->isValid()) {
             $stringifiedTargetedMetadata .= $this->stringify_Targeted_Metadata($metadataTag->buildTargetedMetadata(), $exclusion);
           }
         } else {
-          $stringifiedTargetedMetadata .= $prefix . $metadataTag;
+          if (($schemaFromShortcut = $this->schemataManager->isSchemaShortcut($metadataTag, true)) instanceof Schema) {
+            if ($schemaFromShortcut->isValid()) {
+              $stringifiedTargetedMetadata .= $this->stringify_Targeted_Metadata($schemaFromShortcut->buildTargetedMetadata(), $exclusion);
+            }
+          } else {
+            $stringifiedTargetedMetadata .= $prefix . $metadataTag;
+          }
         }
+
         if ($i++ !== $targetedMetadataLength) {
           $stringifiedTargetedMetadata .= " ";
         }
       }
     }
-    var_dump($stringifiedTargetedMetadata);
-    die();
     return $stringifiedTargetedMetadata;
   }
 

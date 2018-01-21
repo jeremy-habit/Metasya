@@ -12,12 +12,12 @@ class ToolBox
   const DS = DIRECTORY_SEPARATOR;
 
   /**
-   * $instance is private in order to implement the singleton pattern
+   * @var ToolBox $instance : it is private in order to implement the singleton pattern
    */
   private static $instance;
 
   /**
-   * private constructor
+   * ToolBox constructor.
    */
   private function __construct()
   {
@@ -34,7 +34,7 @@ class ToolBox
   /**
    * Method to reach the UNIQUE instance of the class.
    *
-   * @return $this
+   * @return ToolBox
    */
   public static function getInstance()
   {
@@ -44,6 +44,13 @@ class ToolBox
     return self::$instance;
   }
 
+  /**
+   * List files according one or several extensions
+   *
+   * @param $folderPath
+   * @param array $lstExtensions
+   * @return array
+   */
   public function lsFiles($folderPath, $lstExtensions = array('txt'))
   {
     $stringifiedExtensionsList = "";
@@ -57,7 +64,7 @@ class ToolBox
   }
 
   /**
-   * Determines the operating system (windows or unix)
+   * Determine the operating system (windows or unix)
    * @return string
    */
   public function determinesOS()
@@ -69,6 +76,8 @@ class ToolBox
   }
 
   /**
+   * Allow to remove a directory and it's content recursively
+   *
    * @param $dir
    */
   public function recursiveRmdir($dir)
@@ -110,9 +119,38 @@ class ToolBox
   }
 
   /**
+   * Check if a string starts with an other one
+   *
+   * @param $haystack
+   * @param $needle
+   * @return bool
+   */
+  public function startsWith($haystack, $needle)
+  {
+    $length = strlen($needle);
+    return (substr($haystack, 0, $length) === $needle);
+  }
+
+  /**
+   * Check if a string ends with an other one
+   *
+   * @param $haystack
+   * @param $needle
+   * @return bool
+   */
+  public function endsWith($haystack, $needle)
+  {
+    $length = strlen($needle);
+
+    return $length === 0 ||
+      (substr($haystack, -$length) === $needle);
+  }
+
+  /**
    * Return json file content as array
+   *
    * @param $jsonFilePath
-   * @return null|array
+   * @return mixed|array
    */
   public function getJsonFileAsArray($jsonFilePath)
   {
@@ -125,6 +163,7 @@ class ToolBox
 
   /**
    * Convert any object to array recursively.
+   *
    * @param $obj object
    * @return array
    */

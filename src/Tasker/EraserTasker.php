@@ -17,6 +17,7 @@ class EraserTasker extends AbstractTasker
 
   /**
    * Return the stringified targeted or excluded metadata tag.
+   *
    * @param $targetedMetadata
    * @param bool $exclusion
    * @return string
@@ -45,6 +46,7 @@ class EraserTasker extends AbstractTasker
 
   /**
    * Return the stringified command to execute with exiftool.
+   *
    * @param $targetedMetadata
    * @param $excludedMetadata
    * @param $overwrite
@@ -62,6 +64,7 @@ class EraserTasker extends AbstractTasker
 
   /**
    * Remove metadata tag.
+   *
    * @param array $targetedMetadata
    * @param array $excludedMetadata
    * @param bool $overwrite

@@ -83,7 +83,7 @@ class MetadataHelper
   }
 
   /**
-   * Concatenates the EXIFTOOL_PATH const with the result of the function determine_OS in order generate the path to exiftool exe
+   * Concatenate the EXIFTOOL_PATH const with the result of the function determine_OS in order generate the path to exiftool exe
    * @return string
    */
   private function generate_Full_Exiftool_Path()
@@ -159,7 +159,7 @@ class MetadataHelper
   /* -- Version End -- */
 
   /**
-   * Allows the user to execute any commands with the used exiftool version
+   * Allow the user to execute any commands with the used exiftool version
    * @param $stringifyCmd
    * @return string
    */
@@ -304,7 +304,7 @@ class MetadataHelper
   }
 
   /**
-   * @return mixed
+   * @return $this|ToolBox
    */
   public function getToolBox()
   {
@@ -341,8 +341,8 @@ class MetadataHelper
    */
   public function updateSchemataFolderPath($schemataFolderPath)
   {
-    $oldSchemataFolderPath = $this->schemataManager->getSchemataFolderPath();
-    $this->schemataManager->setSchemataFolderPath($schemataFolderPath, $oldSchemataFolderPath);
+    $oldSchemataFolderPath = $this->schemataManager->getUserSchemataFolderPath();
+    $this->schemataManager->setUserSchemataFolderPath($schemataFolderPath, $oldSchemataFolderPath);
   }
 
   /**

@@ -12,7 +12,8 @@ Autoloader::register();
 $metadataHelper = new MetadataHelper("data/images/photo1.jpg", false);
 $metadataHelper->setFilePath("data/images/paysage.jpg");
 
-$metadataHelper->read(["cosmos"]);
+
+var_dump($metadataHelper->readByGroup(["cosmos", "bonjour"],2));
 
 /*
 $metadataHelper->getSchemataManager()->setUserSchemataFolderPath("coucou/test", true);

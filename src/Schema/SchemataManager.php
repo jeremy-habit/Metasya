@@ -57,41 +57,40 @@ class SchemataManager
 
   }
 
-  public function deploy($schema)
-  {
-    /* TODO : rework ! */
-    if ($schema instanceof Schema) {
-      if (!$this->isSchemaShortcut($schema->getShortcut())) {
-        // creation du nouveau json
-        $properties = array();
-        foreach ($schema->getProperties() as $property) {
-          $properties[$property->getTagName()] = array(
-            "value" => $property->getValue(),
-            "namespace" => $property->getNamespace()
+  /*  public function deploy($schema)
+    {
+      if ($schema instanceof Schema) {
+        if (!$this->isSchemaShortcut($schema->getShortcut())) {
+          // creation du nouveau json
+          $properties = array();
+          foreach ($schema->getMetadata() as $metadata) {
+            $properties[$property->getTagName()] = array(
+              "value" => $property->getValue(),
+              "namespace" => $property->getNamespace()
+            );
+          }
+          $jsonSchema = array(
+            "shortcut" => $schema->getShortcut(),
+            "description" => $schema->getDescription(),
+            "metadata" => $properties
           );
+          $fp = fopen($this->userSchemataFolderPath . ToolBox::DS . $schema->getShortcut() . '-schema.json', 'w');
+          fwrite($fp, json_encode($jsonSchema));
+          fclose($fp);
+          array_push($this->schemata, $schema);
+        } else {
+          return "The shortcut " . $schema->getShortcut() . " is already used by an other one schema !";
         }
-        $jsonSchema = array(
-          "shortcut" => $schema->getShortcut(),
-          "description" => $schema->getDescription(),
-          "namespace" => $schema->getNamespace(),
-          "properties" => $properties
-        );
-        $fp = fopen($this->userSchemataFolderPath . ToolBox::DS . $schema->getShortcut() . '.json', 'w');
-        fwrite($fp, json_encode($jsonSchema));
-        fclose($fp);
-        array_push($this->schemata, $schema);
-      } else {
-        return "The shortcut " . $schema->getShortcut() . " is already used by an other one schema !";
       }
-    }
-    return false;
-  }
-
+      return false;
+    }*/
 
   /**
+   * Test if a string corresponds to a shortcut of a schema
+   *
    * @param $string
    * @param bool $returnSchema
-   * @return bool|Schema
+   * @return bool|Schema|mixed
    */
   public function isSchemaShortcut($string, $returnSchema = false)
   {
@@ -105,19 +104,20 @@ class SchemataManager
 
 
   /**
+   * Return a schema object from its shortcut if it exists
+   *
    * @param $shortcut
-   * @return bool|Schema
+   * @return bool|Schema|mixed
    */
   public function getSchemaFromShortcut($shortcut)
   {
     return $this->isSchemaShortcut($shortcut, true);
   }
 
-
   /**
    * Method to reach the UNIQUE instance of the class.
    *
-   * @return $this
+   * @return SchemataManager
    */
   public static function getInstance()
   {
@@ -127,75 +127,78 @@ class SchemataManager
     return self::$instance;
   }
 
+  /**
+   * Allow to create schema object from json file
+   *
+   * @param $folderPath
+   */
   private function convert_Json_File_To_Schema_Object($folderPath)
   {
     if (is_dir($folderPath)) {
       $schemataJsonFiles = $this->toolbox->lsFiles($folderPath, array('json'));
       foreach ($schemataJsonFiles as $schemataJsonFile) {
+        if ($this->toolbox->endsWith(basename($schemataJsonFile), "-schema.json")) {
+          $schemaAsArray = $this->toolbox->getJsonFileAsArray($schemataJsonFile);
 
-        $schemaAsArray = $this->toolbox->getJsonFileAsArray($schemataJsonFile);
+          // creation of an empty object Schema
+          $schema = $this->createSchemaFromArray($schemaAsArray, basename($schemataJsonFile));
 
-        // creation of an empty object Schema
-        $schema = $this->createSchemaFromArray($schemaAsArray);
+          /*$schema = new Schema();
+          $validationResult = $this->isValidSchema($schemaAsArray);
+          $schema->setErrors($validationResult['errors']);
+          $schema->setIsValid($validationResult['valid']);
+          if ($schema->isValid()) {
+            // setting description and shortcut
 
-        /*$schema = new Schema();
-        $validationResult = $this->isValidSchema($schemaAsArray);
-        $schema->setErrors($validationResult['errors']);
-        $schema->setIsValid($validationResult['valid']);
-        if ($schema->isValid()) {
-          // setting description and shortcut
-
-          // adding of metadata
-          foreach ($schemaAsArray['metadata'] as $metadataGroup) {
-            foreach ($metadataGroup["properties"] as $tagName => $content) {
-              $schema->addMetadata(new Metadata($tagName, $metadataGroup['namespace'], $content['shortcut']));
+            // adding of metadata
+            foreach ($schemaAsArray['metadata'] as $metadataGroup) {
+              foreach ($metadataGroup["properties"] as $tagName => $content) {
+                $schema->addMetadata(new Metadata($tagName, $metadataGroup['namespace'], $content['shortcut']));
+              }
             }
-          }
-        }*/
-        // adding of this objet into the list of Schemata
-        array_push($this->schemata, $schema);
+          }*/
+          // adding of this objet into the list of Schemata
+          array_push($this->schemata, $schema);
+        }
       }
     }
   }
 
   /**
-   * Allows to test if a schema as array is valid or not
+   * Used to create a schema object from json file
    *
    * @param $schemaAsArray
+   * @param $jsonFileBasename
    * @return Schema
    */
-  private function createSchemaFromArray($schemaAsArray)
+  private function createSchemaFromArray($schemaAsArray, $jsonFileBasename)
   {
     $newSchema = new Schema();
     $newSchema->setSchemaAsArray($schemaAsArray);
     $newSchema->setDescription($schemaAsArray['description']);
+    $newSchema->setFileName($jsonFileBasename);
     // shortcut required
     if (!isset($schemaAsArray['shortcut'])) {
-      $newSchema->setIsValid(false);
       $newSchema->addError("Schema's shortcut is missing.");
     } else {
       $newSchema->setShortcut($schemaAsArray['shortcut']);
     }
     // metadata required
     if (!isset($schemaAsArray['metadata']) || !is_array($schemaAsArray["metadata"])) {
-      $newSchema->setIsValid(false);
       $newSchema->addError("Schema's metadata list is missing or is not an array.");
     } else {
       foreach ($schemaAsArray['metadata'] as $index => $metadataGroup) {
         // namespace required
         if (!isset($metadataGroup['namespace'])) {
-          $newSchema->setIsValid(false);
           $newSchema->addError("The namespace of the metadata's group at the index " . $index . " is missing.");
         } else {
           // properties required
           if (!isset($metadataGroup['properties']) || !is_array($metadataGroup['properties'])) {
-            $newSchema->setIsValid(false);
             $newSchema->addError("The properties list of the metadata's group at the index " . $index . " is missing or is not an array.");
           } else {
             foreach ($metadataGroup['properties'] as $tagName => $content) {
               // shortcut required
               if (!isset($content['shortcut'])) {
-                $newSchema->setIsValid(false);
                 $newSchema->addError("The shortcut of the property " . $tagName . " of the metadata's group at the index " . $index . " is missing.");
               } else {
                 $newSchema->addMetadata(new Metadata($tagName, $metadataGroup['namespace'], $content['shortcut']));
@@ -246,26 +249,30 @@ class SchemataManager
 
   }
 
-  private
-  function synchronize_Default_Schemata()
+  /**
+   * Create the default schemata object
+   */
+  private function synchronize_Default_Schemata()
   {
     $this->convert_Json_File_To_Schema_Object(self::DEFAULT_SCHEMATA_FOLDER_PATH);
   }
 
-
-  private
-  function synchronize_User_Schemata()
+  /**
+   * Create the custom schemata object
+   */
+  private function synchronize_User_Schemata()
   {
     $this->convert_Json_File_To_Schema_Object(self::USER_SCHEMATA_FOLDER_PATH);
   }
 
 
   /**
-   * @param string $oldSchemataFolderPath
+   * Allow to change the user schemata folder
+   *
+   * @param $oldSchemataFolderPath
    * @param bool $removeDefaultFolder
    */
-  private
-  function change_User_Schemata_Folder($oldSchemataFolderPath, $removeDefaultFolder = false)
+  private function change_User_Schemata_Folder($oldSchemataFolderPath, $removeDefaultFolder = false)
   {
     // creation of the new folder(s)
     if (!is_dir($this->userSchemataFolderPath)) {
@@ -289,20 +296,18 @@ class SchemataManager
   }
 
   /**
-   * @return mixed
+   * @return String
    */
-  public
-  function getUserSchemataFolderPath()
+  public function getUserSchemataFolderPath()
   {
     return $this->userSchemataFolderPath;
   }
 
   /**
-   * @param mixed $userSchemataFolderPath
+   * @param $userSchemataFolderPath
    * @param bool $removeDefaultOlder
    */
-  public
-  function setUserSchemataFolderPath($userSchemataFolderPath, $removeDefaultOlder = false)
+  public function setUserSchemataFolderPath($userSchemataFolderPath, $removeDefaultOlder = false)
   {
     $oldSchemataFolderPath = $this->userSchemataFolderPath;
     $this->userSchemataFolderPath = $userSchemataFolderPath;
@@ -315,6 +320,40 @@ class SchemataManager
   public function getSchemata()
   {
     return $this->schemata;
+  }
+
+  /**
+   * Return the list of valid schemata
+   *
+   * @return array
+   */
+  public function getValidSchemata()
+  {
+    $validSchemata = array();
+    foreach ($this->schemata as $schema) {
+      if ($schema->isValid()) {
+        array_push($validSchemata, $schema);
+      }
+    }
+    return $validSchemata;
+  }
+
+  /**
+   * Return the state of each schema in the list schemata
+   *
+   * @return array
+   */
+  public function checkSchemataState()
+  {
+    $schemataState = array();
+    foreach ($this->schemata as $schema) {
+      if ($schema->isValid()) {
+        $schemataState[$schema->getShortcut()] = "valid";
+      } else {
+        $schemataState[$schema->getShortcut()] = $schema->getErrors();
+      }
+    }
+    return $schemataState;
   }
 
 

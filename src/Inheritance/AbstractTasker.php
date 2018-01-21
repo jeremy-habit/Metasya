@@ -22,18 +22,15 @@ abstract class AbstractTasker
    */
   protected $metadataHelper;
 
-
   /**
-   * @var mixed
+   * @var ToolBox $toolBox
    */
   protected $toolBox;
-
 
   /**
    * @var SchemataManager $schemataManager
    */
   protected $schemataManager;
-
 
   /**
    * AbstractTasker constructor.
@@ -52,6 +49,7 @@ abstract class AbstractTasker
 
   /**
    * Execute a stringified command with exiftool and return its result.
+   *
    * @param $stringifiedCmd
    * @param bool $jsonOutput
    * @return array|null|string
