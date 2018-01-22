@@ -192,11 +192,11 @@ class SchemataManager
         if (!isset($metadataGroup['namespace'])) {
           $newSchema->addError("The namespace of the metadata's group at the index " . $index . " is missing.");
         } else {
-          // properties required
-          if (!isset($metadataGroup['properties']) || !is_array($metadataGroup['properties'])) {
-            $newSchema->addError("The properties list of the metadata's group at the index " . $index . " is missing or is not an array.");
+          // list required
+          if (!isset($metadataGroup['list']) || !is_array($metadataGroup['list'])) {
+            $newSchema->addError("The list of the metadata's group at the index " . $index . " is missing or is not an array.");
           } else {
-            foreach ($metadataGroup['properties'] as $tagName => $content) {
+            foreach ($metadataGroup['list'] as $tagName => $content) {
               // shortcut required
               if (!isset($content['shortcut'])) {
                 $newSchema->addError("The shortcut of the property " . $tagName . " of the metadata's group at the index " . $index . " is missing.");
@@ -315,7 +315,7 @@ class SchemataManager
   }
 
   /**
-   * @return mixed
+   * @return array|Schema[]
    */
   public function getSchemata()
   {

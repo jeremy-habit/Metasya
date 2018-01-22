@@ -4,7 +4,7 @@
   "metadata": [
     {
       "namespace": "XMP-dc",
-      "properties": {
+      "list": {
         "Title": {
           "shortcut": "t"
         },
@@ -18,7 +18,7 @@
     },
     {
       "namespace": "System",
-      "properties": {
+      "list": {
         "FileSize": {
           "shortcut": "fs"
         }

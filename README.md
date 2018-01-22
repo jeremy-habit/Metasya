@@ -496,12 +496,28 @@ Metasya offers a system of schemata in order to easly manage metadata of files.
 
 
 
-* **What is a schema ?** A schema can be a JSON file and/or an object which contains information like the sortcut of the schema, metadata properties, namespace, description ... There are two kinds of schema : the default schemata which are nominated by Metasya, and the user's schemata which are created by the user.
+* **What is a schema ?** A schema can be a JSON file and/or an object which contains information like the shortcut of the schema, metadata properties, namespace, description ... There are two kinds of schema : the default schemata which are nominated by Metasya, and the user's schemata which are created by the user.
 
 
 
-* **What is the utility of this system ?** With this system, you can use several defaults schemata in order to read a lot of metadata for example. This sytem it's a saving of time : you can just write one word (the shema's shortcut) instead of the list of all metadata you want to read.
+* **What is the utility of this system ?** With this system, you can use several schemata in order to read a lot of metadata for example. This sytem it's a saving of time : you can just write one word (the shema's shortcut) instead of the list of all metadata you want to read.
 
+
+
+
+#### How to use schemata
+
+The current version of Metasya only allows to use schemata with the reader tasker.
+
+Indeed, let's see some examples :
+
+```php
+// shortcut way
+$metadataHelper->read(["a-schema-shortcut", "XMP-dc:title"]);
+
+// schema object way
+$metadataHelper->read([$schemaObject, "XMP-dc:title"]);
+```
 
 
 
@@ -511,33 +527,56 @@ Note that you have the possibility to create your own schemata and to stock them
 
 
 
-*Example of a valid schema as JSON file :*
+**! Note** : the name of a personal schema must ends with "*-schema.json*". Example of a valid name : **cosmos-schema.json**.
+
+
+
+##### Example of a valid schema as JSON file
 
 ```json
 {
   "shortcut": "cosmos",
   "description": "Schema to get some metadata",
-  "namespace": "XMP-dc",
-  "properties": {
-    "Title": {
-      "value": null,
-      "namespace": null
+  "metadata": [
+    {
+      "namespace": "XMP-dc",
+      "list": {
+        "Title": {
+          "shortcut": "t"
+        },
+        "Creator": {
+          "shortcut": "c"
+        },
+        "Description": {
+          "shortcut": "d"
+        }
+      }
     },
-    "Creator": {
-      "value": "Mr nobody",
-      "namespace": null
-    },
-    "Description": {
-      "value": null,
-      "namespace": null
-    },
-    "FileSize": {
-      "value": null,
-      "namespace": "System"
+    {
+      "namespace": "System",
+      "list": {
+        "FileSize": {
+          "shortcut": "fs"
+        }
+      }
     }
-  }
+  ]
 }
 ```
+
+
+
+##### Description & rules of the structure
+
+Respect the following rules in order to create a valid schema as JSON file. Note that if a JSON file is not valid, the schema object will be created but it will not be usable.
+
+| JSON key            | Description                              | Rules                    | Required |
+| ------------------- | ---------------------------------------- | ------------------------ | -------- |
+| shortcut            | The shortcut is a label which refers to a schema or a metadata. | It must be unique.       | ✓        |
+| description         | Describe the schema.                     |                          | ✗        |
+| metadata            | This JSON array contains several metadata grouped by namespace. | It must be a JSON array. | ✓        |
+| metadata[namespace] | Correspond to the namespace of the group of metadata. |                          | ✓        |
+| metadata[list]      | The list of metadata with their shortcut. |                          | ✓        |
 
 
 
@@ -547,7 +586,7 @@ First you need to know that the SchemataManager is a singleton : it means that o
 
 
 
-You can get it like follow :
+You can get this manager like following :
 
 ```php
 $schemataManager = SchemataManager::getInstance();
@@ -568,22 +607,37 @@ $metadataHelper->getSchemataManager()->getSchemata();
 
 /* Result :
 
-  array (size=1)
-    0 => 
-      object(MagicMonkey\Metasya\Schema\Schema)[4]
-        private 'shortcut' => string 'xmp-test' (length=8)
-        private 'namespace' => string 'XMP-dc' (length=6)
-        private 'description' => string '' (length=0)
-        private 'properties' => 
-          array (size=2)
-            0 => 
-              object(MagicMonkey\Metasya\Schema\Property)[5]
-                ...
-            1 => 
-              object(MagicMonkey\Metasya\Schema\Property)[6]
-                ...
+array (size=2)
+  0 => 
+    object(MagicMonkey\Metasya\Schema\Schema)[4]
+      private 'fileName' => string 'xmp-test-schema.json' (length=20)
+      private 'shortcut' => string 'USER-xmp' (length=8)
+      private 'isValid' => boolean false
+      private 'errors' => 
+        array (size=1)
+          0 => string 'Schema's metadata list is missing or is not an array.' (length=53)
+      private 'description' => string '' (length=0)
+      private 'metadata' => 
+        array (size=0)
+          empty
+      private 'schemaAsArray' => 
+        array (size=4)
+          'shortcut' => string 'USER-xmp' (length=8)
+          'description' => string '' (length=0)
+          'namespace' => string 'XMP-dc' (length=6)
+          'properties' => 
+            array (size=2)
+              ...
 
 */
+```
+
+
+
+##### Get all valid schemata as objects (default and user)
+
+```php
+$metadataHelper->getSchemataManager()->getValidSchemata();
 ```
 
 
@@ -603,6 +657,14 @@ If the old folder "**metasyaSchemata**" contains json files as schemata, all the
 ```php
 $metadataHelper->getSchemataManager()->setUserSchemataFolderPath("my/new/path", true);
 ```
+
+
+
+You can get the user's schemata's folder for information like this :
+```php
+$metadataHelper->getSchemataManager()->getUsersSchemataFolder();
+```
+
 
 
 
@@ -626,65 +688,86 @@ $metadataHelper->getSchemataManager()->getSchemaFromShortcut("a-shortcut");
 
 
 
+##### Check the state of schemata
 
-#### The class Property
-
-A Property object corresponds to a metadata tag. You can create a Proprety according to its tag name, its namespace and its value. Note that only the tag name is required. Let's see an example :
+It can be useful to check the state of schemata in order to be aware of possible errors. In the example below, the first one schema identified by "USER-xmp" isn't valid, contrary to to the second one identified by "cosmos".
 
 ```php
-$titleProperty = new Property("Title");
-$creatorProperty = new Property("Creator", "", "Mr nobody");
-$descriptionProperty = new Property("Description");
-$sizeProperty = new Property("FileSize", "System");
+$metadataHelper->getSchemataManager()->checkSchemataState();
+
+/* Result :
+
+  array (size=2)
+    'USER-xmp' => 
+      array (size=1)
+        0 => string 'Schema's metadata list is missing or is not an array.'
+        (length=53)
+    'cosmos' => string 'valid' (length=5)
+    
+*/
+```
+
+
+
+
+#### The class Metadata
+
+A Metadata object corresponds to a metadata tag. You can create a Metadata according to its tag name, its namespace and its shortcut. Let's see an example :
+
+```php
+$title = new Metadata("Title", "XMP-dc", "ti");
+$creator = new Metadata("Creator", "XMP-dc", "crea");
+$description = new Metadata("Description", "XMP-dc", "desc");
+$sizeProperty = new Metadata("FileSize", "System", "fs");
 ```
 
 
 
 #### The class Schema
 
-A Schema object is constituted by a shortcut, a global namespace and a list of properties. The shortcut allows to make a reference to the schema. If the Schema is used to read metadata, the global namespace is used before every property  which has not its own namespace. It's practical when a lot of properties have the same namespace because it's not necessary to inform it during the creation of the property.
+A Schema object is mainly constituted by a shortcut, a description and a list of metadata. The shortcut allows to make a reference to the schema.
 
 ```php
-/* For this example, we will use the properties created in the last one */
-$mySchemaObject = new Schema("shortcut", "XMP-dc", "Schema to get some metadata");
-$mySchemaObject->addProperty($titleProperty);
-$mySchemaObject->addProperty($creatorProperty);
-$mySchemaObject->addProperty($descriptionProperty);
-$mySchemaObject->addProperty($sizeProperty);
+/* For this example, we will use the metadata created in the last one */
+$mySchemaObject = new Schema("super-xmp", "Schema to get some metadata");
+$mySchemaObject->addMetadata($title);
+$mySchemaObject->addMetadata($creator);
+$mySchemaObject->addMetadata($description);
+$mySchemaObject->addMetadata($size);
 
 $metadataHelper->read([$mySchemaObject]);
 /*
-thus Exiftool will search for the following properties : 
+thus Exiftool will search for the following metadata : 
 	=> XMP-dc:Title, XMP-dc:Creator, XMP-dc:Description, System:FileSize 
 */
 ```
 
 
 
-##### Get the list of properties
+##### Get the list of metadata
 
 ```php
-var_dump($mySchemaObject->getProperties());
+var_dump($mySchemaObject->getMetadata());
 
 /* result :
 array (size=4)
   0 => 
-    object(MagicMonkey\Metasya\Schema\Property)[7]
+    object(MagicMonkey\Metasya\Schema\Metadata)[7]
       private 'tagName' => string 'Title' (length=5)
       private 'nameSpace' => null
       private 'value' => null
   1 => 
-    object(MagicMonkey\Metasya\Schema\Property)[8]
+    object(MagicMonkey\Metasya\Schema\Metadata)[8]
       private 'tagName' => string 'Creator' (length=7)
       private 'nameSpace' => string '' (length=0)
       private 'value' => string 'Mr nobody' (length=9)
   2 => 
-    object(MagicMonkey\Metasya\Schema\Property)[9]
+    object(MagicMonkey\Metasya\Schema\Metadata)[9]
       private 'tagName' => string 'Description' (length=11)
       private 'nameSpace' => null
       private 'value' => null
   3 => 
-    object(MagicMonkey\Metasya\Schema\Property)[10]
+    object(MagicMonkey\Metasya\Schema\Metadata)[10]
       private 'tagName' => string 'FileSize' (length=8)
       private 'nameSpace' => string 'System' (length=6)
       private 'value' => null
@@ -693,7 +776,7 @@ array (size=4)
 
 
 
-##### Get the list of properties as targeted metadata
+##### Get the list of metadata as targeted metadata
 
 ```php
 var_dump($mySchemaObject->buildTargetedMetadata());
@@ -709,28 +792,16 @@ array (size=4)
 
 
 
-##### Add and remove property to a schema
+##### Add and remove metadata to a schema
 
-Obviously you can add and remove a property to a schema like following :
+Obviously you can add and remove a metadata to a schema like following :
 
 ```php
-$mySchemaObject->addProperty(new Property("Title"));
-$mySchemaObject->removeProperty($creatorProperty);
+$mySchemaObject->addMetadata(new Metadata("Title"));
+$mySchemaObject->removeMetadata($creator);
 /* or with the index */
-$mySchemaObject->removeProperty(0);
+$mySchemaObject->removeMetadata(0);
 ```
-
-
-
-##### Deploy/add a schema object as json
-
-You can deploy a schema object as a json file like following :
-
-```php
-$mySchemaObject->deploy();
-```
-
-The execution of this function will create the json of the schema and will add it inside the user's schemata's folder. Its execution will also add the schema object to schemata list of the the SchemataManager. Note that this funcion only works if the shortcut of the schema is not already used. It means that you can't update a schema via this function. Modify json files instead.
 
 
 
