@@ -797,7 +797,7 @@ array (size=4)
 Obviously you can add and remove a metadata to a schema like following :
 
 ```php
-$mySchemaObject->addMetadata(new Metadata("Title"));
+$mySchemaObject->addMetadata(new Metadata("Title", "XMP-dc", "t-shortcut"));
 $mySchemaObject->removeMetadata($creator);
 /* or with the index */
 $mySchemaObject->removeMetadata(0);
