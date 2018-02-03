@@ -61,9 +61,6 @@ class EraserTasker extends AbstractTasker
           default:
             $stringifiedTargetedMetadata .= $prefix . $metadataTag . $suffix;
         }
-
-        /*
-        $stringifiedTargetedMetadata .= $prefix . $metadataTag . $suffix;*/
         if ($i++ !== $targetedMetadataLength) {
           $stringifiedTargetedMetadata .= " ";
         }
@@ -103,8 +100,6 @@ class EraserTasker extends AbstractTasker
   public function remove($targetedMetadata, $excludedMetadata = null, $overwrite = true)
   {
     $stringifiedCmd = $this->make_Stringify_Cmd($targetedMetadata, $excludedMetadata, $overwrite);
-    var_dump($stringifiedCmd);
-    die();
     return $this->execute($stringifiedCmd);
   }
 }
