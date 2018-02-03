@@ -59,6 +59,8 @@ abstract class AbstractTasker
     $jsonOption = $jsonOutput ? "-json " : null;
     $errorsOption = $this->metadataHelper->getDisplayErrors() ? " 2>&1" : null;
     $cmd = $this->toolBox->trimMultipleWhitespaces($this->metadataHelper->getExiftoolPath() . "exiftool " . $jsonOption . $stringifiedCmd . " " . $this->metadataHelper->getFilePath() . $errorsOption);
+    var_dump($cmd);
+    die();
     $cmdResult = shell_exec($cmd);
     if ($this->toolBox->isJson($cmdResult)) {
       return $this->toolBox->convertObjectToArray(json_decode($cmdResult)[0]);

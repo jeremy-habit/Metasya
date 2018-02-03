@@ -11,8 +11,10 @@ Autoloader::register();
 
 $metadataHelper = new MetadataHelper("data/images/photo1.jpg", false);
 $metadataHelper->setFilePath("data/images/paysage.jpg");
-$descMetadata = $metadataHelper->getSchemataManager()->getSchemaFromShortcut("cosmos")->getMetadatFromShortcut("dublinDesc");
-var_dump($metadataHelper->remove(["coucou", $descMetadata, "dublinDesc", "cosmos"], ["cosmos", "test", "cosmos"]));
+
+$metadataHelper->write(["Title" => "Blue Birdjjhhhj", "rights" => "My song of the year"], false);
+
+var_dump($metadataHelper->readByGroup());
 
 /*var_dump($metadataHelper->readByGroup(["cosmos", "bonjour"],2));*/
 
