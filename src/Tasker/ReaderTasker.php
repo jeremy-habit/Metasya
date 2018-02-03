@@ -3,6 +3,7 @@
 namespace MagicMonkey\Metasya\Tasker;
 
 use MagicMonkey\Metasya\Inheritance\AbstractTasker;
+use MagicMonkey\Metasya\Schema\Metadata;
 use MagicMonkey\Metasya\Schema\Schema;
 
 /**
@@ -33,23 +34,35 @@ class ReaderTasker extends AbstractTasker
       $targetedMetadataLength = count($targetedMetadata);
       $i = 0;
       foreach ($targetedMetadata as $metadataTag) {
-        if ($metadataTag instanceOf Schema) {
-          if ($metadataTag->isValid()) {
-            $stringifiedTargetedMetadata .= $this->stringify_Targeted_Metadata($metadataTag->buildTargetedMetadata(), $exclusion);
-          }
-        } else {
-          if (($schemaFromShortcut = $this->schemataManager->isSchemaShortcut($metadataTag, true)) instanceof Schema) {
+
+
+        switch ($metadataTag) {
+          case $metadataTag instanceOf Schema:
+            if ($metadataTag->isValid()) {
+              $stringifiedTargetedMetadata .= $this->stringify_Targeted_Metadata($metadataTag->buildTargetedMetadata(), $exclusion);
+            }
+            break;
+          case ($schemaFromShortcut = $this->schemataManager->getSchemaFromShortcut($metadataTag)) instanceof Schema:
             if ($schemaFromShortcut->isValid()) {
               $stringifiedTargetedMetadata .= $this->stringify_Targeted_Metadata($schemaFromShortcut->buildTargetedMetadata(), $exclusion);
             }
-          } else {
+            break;
+          case $metadataTag instanceOf Metadata:
+            $stringifiedTargetedMetadata .= $prefix . $metadataTag->__toString();
+            break;
+          case ($metadataFromShortcut = $this->schemataManager->getMetadataFromShortcut($metadataTag)) instanceOf Metadata:
+            $stringifiedTargetedMetadata .= $prefix . $metadataFromShortcut->__toString();
+            break;
+          default:
             $stringifiedTargetedMetadata .= $prefix . $metadataTag;
-          }
         }
+
 
         if ($i++ !== $targetedMetadataLength) {
           $stringifiedTargetedMetadata .= " ";
         }
+
+
       }
     }
     return $stringifiedTargetedMetadata;

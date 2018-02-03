@@ -11,8 +11,8 @@ Autoloader::register();
 
 $metadataHelper = new MetadataHelper("data/images/photo1.jpg", false);
 $metadataHelper->setFilePath("data/images/paysage.jpg");
-
-var_dump($metadataHelper->getSchemataManager()->checkSchemataState());
+$descMetadata = $metadataHelper->getSchemataManager()->getSchemaFromShortcut("cosmos")->getMetadatFromShortcut("dublinDesc");
+var_dump($metadataHelper->remove(["coucou", $descMetadata, "dublinDesc", "cosmos"], ["cosmos", "test", "cosmos"]));
 
 /*var_dump($metadataHelper->readByGroup(["cosmos", "bonjour"],2));*/
 

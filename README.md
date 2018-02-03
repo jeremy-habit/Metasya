@@ -58,6 +58,8 @@ What is **Exiftool** ? Take a look here : [https://www.sno.phy.queensu.ca/~phil/
 
 The MetadataHelper is the main class of Metasya.
 
+
+
 #### Create the object
 
 In order to manage metadata of a file you have to create a new **MetadataHelper** object with the path of the file.
@@ -171,7 +173,7 @@ The **MetadataHelper** object has several **Taskers**. Each **Tasker** brings fe
 The **ReaderTasker** allows to read file's metadata. You can use 3 features which are :
 
 ##### **read** (\$selectedMetadata, \$excludedMetadata) :
-* description : Allow to read all or some file's metadata without exiftool group option.
+* description : Allows to read all or some file's metadata without exiftool group option.
 * params :
     * **$selectedMetadata** : array (default : null) : Indicates metadata you want to read.
     * **$excludedMetadata** : array (default : null) : Indicates metadata you won't to read.
@@ -223,7 +225,7 @@ The **ReaderTasker** allows to read file's metadata. You can use 3 features whic
 
 ##### **readByGroup** (\$selectedMetadata, \$num, \$excludedMetadata) :
 
-  * description : Allow to read all or some file's metadata with the group option -g[$num...] which organize output by tag group.
+  * description : Allows to read all or some file's metadata with the group option -g[$num...] which organize output by tag group.
   * params :
         * **$selectedMetadata** : array (default : null) : Indicates metadata you want to read.
         * **$num** : int (default : 0) : Indicates the level of group.
@@ -268,7 +270,7 @@ The **ReaderTasker** allows to read file's metadata. You can use 3 features whic
 
 ##### **readWithPrefix** (\$selectedMetadata, \$num, \$excludedMetadata) :
 
-  * description : Allow to read all or some file's metadata with the group option -G[$num...] which print group name before each tag.
+  * description : Allows to read all or some file's metadata with the group option -G[$num...] which print group name before each tag.
   * params :
         * **$selectedMetadata** : array (default : null) : Indicates metadata you want to read.
         * **$num** : int (default : 0) : Indicates the level of group.
@@ -312,10 +314,10 @@ The **ReaderTasker** allows to read file's metadata. You can use 3 features whic
 
 #### WriterTasker
 
-The WriterTasker allow to add metadata to a file or to edit file's metadata. You can use 3 features which are :
+The WriterTasker allows to add metadata to a file or to edit file's metadata. You can use 3 features which are :
 
 ##### **write** (\$targetedMetadata, \$replace, \$overwrite) :
-* description : Allow to add or edit some metadata of a file.
+* description : Allows to add or edit some metadata of a file.
 * params :
   * **$targetedMetadata** ( default : null ) : Indicates metadata you want to add or edit.
   * **$replace** ( default : true ) : Indicates if the metadata value must be replaced if the metadata already exists.
@@ -444,10 +446,10 @@ The WriterTasker allow to add metadata to a file or to edit file's metadata. You
 
 #### EraserTasker
 
-The EraserTasker allow to remove file's metadata. Only one feature is available at this moment :
+The EraserTasker allows to remove file's metadata. Only one feature is available at this moment :
 
 ##### **remove** ($targetedMetadata, \$excludedMetadata, \$overwrite) :
-* description : Allow to remove all or some file's metadata.
+* description : Allows to remove all or some file's metadata.
 * params :
     * **$targetedMetadata** ( default : "all" ) : Indicates metadata you want to remove. Can be a **String** or an **Array**.
     * **$excludedMetadata** ( default : null ) : Indicates metadata you won't to remove. Can be a **String** or an **Array**.
@@ -500,24 +502,8 @@ Metasya offers a system of schemata in order to easly manage metadata of files.
 
 
 
-* **What is the utility of this system ?** With this system, you can use several schemata in order to read a lot of metadata for example. This sytem it's a saving of time : you can just write one word (the shema's shortcut) instead of the list of all metadata you want to read.
+* **What is the utility of this system ?** With this system, you can use several schemata in order to read, write or delete a lot of metadata. This sytem it's a saving of time : you can just write one word (the shema's shortcut) instead of the list of all metadata you want to read.
 
-
-
-
-#### How to use schemata
-
-The current version of Metasya only allows to use schemata with the reader tasker.
-
-Indeed, let's see some examples :
-
-```php
-// shortcut way
-$metadataHelper->read(["a-schema-shortcut", "XMP-dc:title"]);
-
-// schema object way
-$metadataHelper->read([$schemaObject, "XMP-dc:title"]);
-```
 
 
 
@@ -542,13 +528,13 @@ Note that you have the possibility to create your own schemata and to stock them
       "namespace": "XMP-dc",
       "list": {
         "Title": {
-          "shortcut": "t"
+          "shortcut": "dublinTitle"
         },
         "Creator": {
-          "shortcut": "c"
+          "shortcut": "dublinAuthor"
         },
         "Description": {
-          "shortcut": "d"
+          "shortcut": "dubinDesc"
         }
       }
     },
@@ -577,6 +563,66 @@ Respect the following rules in order to create a valid schema as JSON file. Note
 | metadata            | This JSON array contains several metadata grouped by namespace. | It must be a JSON array. | ✓        |
 | metadata[namespace] | Correspond to the namespace of the group of metadata. |                          | ✓        |
 | metadata[list]      | The list of metadata with their shortcut. |                          | ✓        |
+
+
+
+#### How to use schemata with taskers
+
+Note that for every following examples, the above schema example called "cosmos" will be used.
+
+
+
+##### How to read
+
+You can read all schema's metadata by passing its shortcut or the schema as object. You can also read only some metadata of the schema in same ways.
+
+Let's see an example :
+
+```php
+// 1.  all metadata of the schema "cosmos" and the meadata Title with the namespace XMP-dc will be returned (if they exist) :
+
+  // shortcut way
+  $metadataHelper->read(["cosmos", "XMP-dc:title"]);
+
+  // schema object way
+  $metadataHelper->read([$cosmosSchemaObject, "XMP-dc:title"]);
+
+
+// 2. Only the description metadata from the cosmos schema and the meadata Title with the namespace XMP-dc will be returned (if they exist) :
+
+  // metadata shortcut way
+  $metadataHelper->read(["dublinDesc", "XMP-dc:title"]);
+
+  // metadata object way
+  $metadataHelper->read([$descriptionMetadata, "XMP-dc:title"]);
+```
+
+
+
+##### How to write
+
+You can add or edit metatdata without knowing namespace and metadata tag. Indeed, the system of schemata allows to use the shortcut of schemata's metadata like following : 
+
+```php
+// dublinDesc and dublinTitle are shortcut, rights is not a shortcut
+$metadataHelper->write(["dublinDesc" => "new description", "dublinTitle" => "new title", "rights" => "new rights"]));
+```
+
+
+
+##### How to delete
+
+As the method to read, you can remove all schema's metadata by passing its shortcut or the schema as object. You can also remove only some metadata of the schema in same ways.
+
+```php
+// 1. remove all metadata except metadata of the schema "cosmos" :
+  
+$metadataHelper->remove(["all"], ["cosmos"]);
+
+// 2. remove metadata of the schema "cosmos" and the metadata rights except the description metadata targeted via its cosmos shortcut "dublinDesc" :
+
+$metadataHelper->remove(["cosmos", "rights"], ["dublinDesc"]);
+```
 
 
 
@@ -684,6 +730,26 @@ You can get a schema as object with the function *getSchemaFromShortcut()* :
 
 ```php
 $metadataHelper->getSchemataManager()->getSchemaFromShortcut("a-shortcut");
+```
+
+
+
+##### Test if a string is a shortcut of metadata
+
+You can test if a string is associated to a metadata with the function *isMetadataShortcut()*. This last one return true of false according the shortcut value given as parameter. Note that only metadata from valid schemata are tested.
+
+```php
+$metadataHelper->getSchemataManager()->isMetadataShortcut("a-shortcut");
+```
+
+
+
+##### Get a metadata as object from its shortcut
+
+You can get a metadata as object with the function *getMetadataFromShortcut()*. Note that only metadata from valid schemata are tested.
+
+```php
+$metadataHelper->getSchemataManager()->getMetadataFromShortcut("a-shortcut");
 ```
 
 
@@ -801,6 +867,26 @@ $mySchemaObject->addMetadata(new Metadata("Title", "XMP-dc", "t-shortcut"));
 $mySchemaObject->removeMetadata($creator);
 /* or with the index */
 $mySchemaObject->removeMetadata(0);
+```
+
+
+
+##### Test if a string is a shortcut of metadata of the schema
+
+You can test if a string is associated to a metadata of the schema with the function *isMetadataShortcut()*. This last one return true of false according the shortcut value given as parameter. Note that the schema must be valid.
+
+```php
+$mySchemaObject->isMetadataShortcut("a-shortcut");
+```
+
+
+
+##### Get a metadata as object from its shortcut
+
+You can get a metadata fo the schema as object with the function *getMetadataFromShortcut()*. Note that the schema must be valid.
+
+```php
+$mySchemaObject->getMetadataFromShortcut("a-shortcut");
 ```
 
 

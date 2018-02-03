@@ -1,18 +1,12 @@
 {
-  "shortcut": "cosmos",
+  "shortcut": "arc",
   "description": "Schema to get some metadata",
   "metadata": [
     {
       "namespace": "XMP-dc",
       "list": {
         "Title": {
-          "shortcut": "dublinTitle"
-        },
-        "Creator": {
-          "shortcut": "dublinAuthor"
-        },
-        "Description": {
-          "shortcut": "dublinDesc"
+          "shortcut": "arcTitle"
         }
       }
     },

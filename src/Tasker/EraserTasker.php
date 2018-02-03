@@ -3,6 +3,8 @@
 namespace MagicMonkey\Metasya\Tasker;
 
 use MagicMonkey\Metasya\Inheritance\AbstractTasker;
+use MagicMonkey\Metasya\Schema\Metadata;
+use MagicMonkey\Metasya\Schema\Schema;
 
 /**
  * Class EraserTasker
@@ -20,25 +22,53 @@ class EraserTasker extends AbstractTasker
    *
    * @param $targetedMetadata
    * @param bool $exclusion
+   * @param bool $recursive
    * @return string
    */
-  private function stringify_Targeted_Metadata($targetedMetadata, $exclusion = false)
+  private function stringify_Targeted_Metadata($targetedMetadata, $exclusion = false, $recursive = false)
   {
     $stringifiedTargetedMetadata = "";
     $prefix = "-";
     $suffix = "=";
     if ($exclusion) {
       $suffix = null;
-      $stringifiedTargetedMetadata = "-tagsFromFile " . $this->metadataHelper->getFilePath() . " ";
+      if (!$recursive) {
+        $stringifiedTargetedMetadata = "-tagsFromFile " . $this->metadataHelper->getFilePath() . " ";
+      }
     }
     if (is_array($targetedMetadata)) {
       $targetedMetadataLength = count($targetedMetadata);
       $i = 0;
       foreach ($targetedMetadata as $metadataTag) {
-        $stringifiedTargetedMetadata .= $prefix . $metadataTag . $suffix;
+
+        switch ($metadataTag) {
+          case $metadataTag instanceOf Schema:
+            if ($metadataTag->isValid()) {
+              $stringifiedTargetedMetadata .= $this->stringify_Targeted_Metadata($metadataTag->buildTargetedMetadata(), $exclusion, true);
+            }
+            break;
+          case ($schemaFromShortcut = $this->schemataManager->getSchemaFromShortcut($metadataTag)) instanceof Schema:
+            if ($schemaFromShortcut->isValid()) {
+              $stringifiedTargetedMetadata .= $this->stringify_Targeted_Metadata($schemaFromShortcut->buildTargetedMetadata(), $exclusion, true);
+            }
+            break;
+          case $metadataTag instanceOf Metadata:
+            $stringifiedTargetedMetadata .= $prefix . $metadataTag->__toString() . $suffix;
+            break;
+          case ($metadataFromShortcut = $this->schemataManager->getMetadataFromShortcut($metadataTag)) instanceOf Metadata:
+            $stringifiedTargetedMetadata .= $prefix . $metadataFromShortcut->__toString() . $suffix;
+            break;
+          default:
+            $stringifiedTargetedMetadata .= $prefix . $metadataTag . $suffix;
+        }
+
+        /*
+        $stringifiedTargetedMetadata .= $prefix . $metadataTag . $suffix;*/
         if ($i++ !== $targetedMetadataLength) {
           $stringifiedTargetedMetadata .= " ";
         }
+
+
       }
     }
     return $stringifiedTargetedMetadata;
@@ -73,6 +103,8 @@ class EraserTasker extends AbstractTasker
   public function remove($targetedMetadata, $excludedMetadata = null, $overwrite = true)
   {
     $stringifiedCmd = $this->make_Stringify_Cmd($targetedMetadata, $excludedMetadata, $overwrite);
+    var_dump($stringifiedCmd);
+    die();
     return $this->execute($stringifiedCmd);
   }
 }

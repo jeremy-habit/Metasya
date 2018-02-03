@@ -107,12 +107,42 @@ class SchemataManager
    * Return a schema object from its shortcut if it exists
    *
    * @param $shortcut
-   * @return bool|Schema|mixed
+   * @return null|Schema|mixed
    */
   public function getSchemaFromShortcut($shortcut)
   {
-    return $this->isSchemaShortcut($shortcut, true);
+    return $this->isSchemaShortcut($shortcut, true) ?: null;
   }
+
+  /**
+   * Test if a string corresponds to a shortcut of a metadata for every shchema
+   *
+   * @param $string
+   * @param bool $returnMetadata
+   * @return bool|Metadata|mixed
+   */
+  public function isMetadataShortcut($string, $returnMetadata = false)
+  {
+    foreach ($this->schemata as $schema) {
+      $response = $schema->isMetadataFromShortcut($string, $returnMetadata);
+      if ($response) {
+        return $response;
+      }
+    }
+    return $returnMetadata ? null : false;
+  }
+
+  /**
+   * Return a metadata object from its shortcut if it exists in one schema
+   *
+   * @param $shortcut
+   * @return null|Metadata|mixed
+   */
+  public function getMetadataFromShortcut($shortcut)
+  {
+    return $this->isMetadataShortcut($shortcut, true) ?: null;
+  }
+
 
   /**
    * Method to reach the UNIQUE instance of the class.

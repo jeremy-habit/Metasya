@@ -39,7 +39,12 @@ class WriterTasker extends AbstractTasker
     $targetedMetadataLength = count($targetedMetadata);
     $i = 0;
     foreach ($targetedMetadata as $metadataTag => $metadataValue) {
-      $stringifiedTargetedMetadata .= $prefix . $metadataTag . "=\"" . $metadataValue . "\"";
+      $eventualMetadata = $this->schemataManager->getMetadataFromShortcut($metadataTag);
+      if ($eventualMetadata != null) {
+        $stringifiedTargetedMetadata .= $prefix . $eventualMetadata->__toString() . "=\"" . $metadataValue . "\"";
+      } else {
+        $stringifiedTargetedMetadata .= $prefix . $metadataTag . "=\"" . $metadataValue . "\"";
+      }
       if ($i++ !== $targetedMetadataLength) {
         $stringifiedTargetedMetadata .= " ";
       }
@@ -98,7 +103,7 @@ class WriterTasker extends AbstractTasker
   public function writeFromJsonFile($jsonFilePath = null, $replace = true, $overwrite = true)
   {
     if (!empty($jsonFilePath) && file_exists($jsonFilePath)) {
-      $stringifiedCmd = $this->make_Stringify_Cmd($this->toolBox->extractJsonFromFile($jsonFilePath), $replace, $overwrite);
+      $stringifiedCmd = $this->make_Stringify_Cmd($this->toolBox->getJsonFileAsArray($jsonFilePath), $replace, $overwrite);
       return ($stringifiedCmd != null) ? $this->execute($stringifiedCmd) : "Nothing to write ...";
     }
     return false;

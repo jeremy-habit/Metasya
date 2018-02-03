@@ -88,6 +88,36 @@ class Schema
   }
 
   /**
+   * Test if a string corresponds to a shortcut of a metadata of this schema
+   *
+   * @param $string
+   * @param $returnMetadata
+   * @return bool|Metadata|mixed
+   */
+  public function isMetadataFromShortcut($string, $returnMetadata)
+  {
+    if ($this->isValid) {
+      foreach ($this->metadata as $metadata) {
+        if ($metadata->getShortcut() == $string) {
+          return $returnMetadata ? $metadata : true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Return a metadata object from its shortcut if it exists for this schema
+   *
+   * @param $string
+   * @return null|Metadata|mixed
+   */
+  public function getMetadatFromShortcut($string)
+  {
+    return $this->isMetadataFromShortcut($string, true) ?: null;
+  }
+
+  /**
    * @param $metadata
    * @return bool
    */
