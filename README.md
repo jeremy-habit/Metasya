@@ -162,6 +162,12 @@ var_dump($metadataHelper->execute("-a -u -g1 image.jpg"));
 
 
 
+#### Generate sidecar xmp
+
+
+
+
+
 ### Notion of Taskers
 
 The **MetadataHelper** object has several **Taskers**. Each **Tasker** brings features thanks the use of exiftool.
@@ -531,7 +537,9 @@ Note that you have the possibility to create your own schemata and to stock them
           "shortcut": "dublinTitle"
         },
         "Creator": {
-          "shortcut": "dublinAuthor"
+          "shortcut": "dublinAuthor",
+           "description":"",
+           "type":"String"   // corresponds to MetaTypeString class
         },
         "Description": {
           "shortcut": "dubinDesc"
@@ -556,13 +564,35 @@ Note that you have the possibility to create your own schemata and to stock them
 
 Respect the following rules in order to create a valid schema as JSON file. Note that if a JSON file is not valid, the schema object will be created but it will not be usable.
 
-| JSON key            | Description                              | Rules                    | Required |
-| ------------------- | ---------------------------------------- | ------------------------ | -------- |
-| shortcut            | The shortcut is a label which refers to a schema or a metadata. | It must be unique.       | ✓        |
-| description         | Describe the schema.                     |                          | ✗        |
-| metadata            | This JSON array contains several metadata grouped by namespace. | It must be a JSON array. | ✓        |
-| metadata[namespace] | Correspond to the namespace of the group of metadata. |                          | ✓        |
-| metadata[list]      | The list of metadata with their shortcut. |                          | ✓        |
+| JSON key            | Description                                                  | Rules                                                        | Required |
+| ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | -------- |
+| shortcut            | The shortcut is a label which refers to a schema or a metadata. | It must be unique.                                           | ✓        |
+| description         | Describe the schema or a metadata.                           |                                                              | ✗        |
+| metadata            | This JSON array contains several metadata grouped by namespace. | It must be a JSON array.                                     | ✓        |
+| metadata[namespace] | Corresponds to the namespace of the group of metadata.       |                                                              | ✓        |
+| metadata[list]      | The list of metadata with their shortcut.                    |                                                              | ✓        |
+| type                | Corresponds to the type of value that the metadata accepts.  | It must corresponds to a PHP class which implements the interface MetaTypeInterface. If you want to use the MetaTypeString class, just write "String". | ✗        |
+
+
+
+#### Types of metadata
+
+The default type of a metadata is an instance of the class MetaTypeAny. This last one accepts any type of value. By specifying the type of metadata, the new value of a metadata will be checked before to be added. If this last one is not accepted, it's not added.
+
+
+
+##### The list of types of metadata
+
+| Class          | JSON shortcut | Description                 |
+| -------------- | ------------- | --------------------------- |
+| MetaTypeAny    | Any           | Accepts any type of values. |
+| MetaTypeString | String        | Accepts only string values. |
+
+
+
+##### How to create his own type of metadata
+
+
 
 
 
@@ -778,14 +808,16 @@ $metadataHelper->getSchemataManager()->checkSchemataState();
 
 #### The class Metadata
 
-A Metadata object corresponds to a metadata tag. You can create a Metadata according to its tag name, its namespace and its shortcut. Let's see an example :
+A Metadata object corresponds to a metadata tag. You can create a Metadata according to its tag name, its namespace, its shortcut, it's description and it's type (in this order). Let's see an example :
 
 ```php
 $title = new Metadata("Title", "XMP-dc", "ti");
-$creator = new Metadata("Creator", "XMP-dc", "crea");
+$creator = new Metadata("Creator", "XMP-dc", "crea", "creator description");
 $description = new Metadata("Description", "XMP-dc", "desc");
-$sizeProperty = new Metadata("FileSize", "System", "fs");
+$sizeProperty = new Metadata("FileSize", "System", "fs", null, new MetaTypeString());
 ```
+
+Note that by default the type of a Metadata will be the type MetaTypeAny and the description of a Metadata is null.
 
 
 

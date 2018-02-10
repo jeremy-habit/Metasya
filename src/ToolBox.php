@@ -51,7 +51,7 @@ class ToolBox
    * @param array $lstExtensions
    * @return array
    */
-  public function lsFiles($folderPath, $lstExtensions = array('txt'))
+  public function lsFiles($folderPath, $lstExtensions = array('*'))
   {
     $stringifiedExtensionsList = "";
     for ($i = 0; $i < sizeof($lstExtensions); $i++) {

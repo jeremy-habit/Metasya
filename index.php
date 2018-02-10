@@ -11,11 +11,12 @@ Autoloader::register();
 
 $metadataHelper = new MetadataHelper("data/images/photo1.jpg", false);
 $metadataHelper->setFilePath("data/images/paysage.jpg");
-
 var_dump($metadataHelper->getSchemataManager()->getSchemaFromShortcut("cosmos")->getMetadata());
 
-$meta = new MagicMonkey\Metasya\Schema\Metadata\Metadata("", "", "");
-var_dump($metadataHelper->write([$meta => "dd"]));
+
+var_dump($metadataHelper->readByGroup([], 1));
+/*$meta = new MagicMonkey\Metasya\Schema\Metadata\Metadata("", "", "");
+var_dump($metadataHelper->write([$meta => "dd"]));*/
 
 /*var_dump($metadataHelper->readByGroup(["cosmos", "bonjour"],2));*/
 

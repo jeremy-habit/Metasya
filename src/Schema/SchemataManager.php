@@ -14,7 +14,8 @@ class SchemataManager
 
   /* const DEFAULT_SCHEMATA_FOLDER_PATH = "vendor" . ToolBox::DS . "magicmonkey" . ToolBox::DS . "metasya" . ToolBox::DS . "data" . ToolBox::DS . "defaultSchemata";*/
   const DEFAULT_SCHEMATA_FOLDER_PATH = "src" . ToolBox::DS . "Schema" . ToolBox::DS . "defaultSchemata";
-  const USER_SCHEMATA_FOLDER_PATH = "metasyaSchemata";
+  const USER_SCHEMATA_FOLDER_PATH = "metasya" . ToolBox::DS . "Schemata";
+  const USER_META_TYPE_FOLDER_PATH = "metasya" . ToolBox::DS . "MetaType";
 
   /**
    * $instance is private in order to implement the singleton pattern
@@ -39,6 +40,11 @@ class SchemataManager
   protected $userSchemataFolderPath;
 
   /**
+   * @var String $userMetaTypeFolderPath
+   */
+  protected $userMetaTypeFolderPath;
+
+  /**
    * SchemataManager constructor.
    * @throws \Exception
    */
@@ -47,6 +53,7 @@ class SchemataManager
     $this->schemata = array();
     $this->toolbox = ToolBox::getInstance();
     $this->setUserSchemataFolderPath(self::USER_SCHEMATA_FOLDER_PATH);
+    $this->setUserMetaTypeFolderPath(self::USER_META_TYPE_FOLDER_PATH);
     $this->synchronize_Default_Schemata();
     $this->synchronize_User_Schemata();
   }
@@ -236,12 +243,14 @@ class SchemataManager
               } else {
                 $type = null;
                 if (isset($content['type'])) {
-                  $fqn = "MagicMonkey\Metasya\Schema\Metadata\Type\\" . $content['type'];
+                  $fqn = "MagicMonkey\Metasya\Schema\Metadata\Type\MetaType" . $content['type'];
+                  //$fqn = "Schema" . ToolBox::DS . "Metadata" . ToolBox::DS . "Type" . ToolBox::DS . "MetaType" . $content['type'];
+                  //$fqn = "MagicMonkey\Metasya\MetaType" . $content['type'];
                   if (class_exists($fqn)) {
                     $type = new $fqn;
                   }
                 }
-                $newSchema->addMetadata(new Metadata($tagName, $metadataGroup['namespace'], $content['shortcut'], $type));
+                $newSchema->addMetadata(new Metadata($tagName, $metadataGroup['namespace'], $content['shortcut'], isset($content['description']) ? $content['description'] : null, $type));
               }
             }
           }
@@ -293,7 +302,8 @@ class SchemataManager
    * Create the default schemata object
    * @throws \Exception
    */
-  private function synchronize_Default_Schemata()
+  private
+  function synchronize_Default_Schemata()
   {
     $this->convert_Json_File_To_Schema_Object(self::DEFAULT_SCHEMATA_FOLDER_PATH);
   }
@@ -302,36 +312,39 @@ class SchemataManager
    * Create the custom schemata object
    * @throws \Exception
    */
-  private function synchronize_User_Schemata()
+  private
+  function synchronize_User_Schemata()
   {
     $this->convert_Json_File_To_Schema_Object(self::USER_SCHEMATA_FOLDER_PATH);
   }
 
 
   /**
-   * Allow to change the user schemata folder
+   * Allow to change the path of configuration folder as schemata or type Classes folder.
    *
-   * @param $oldSchemataFolderPath
-   * @param bool $removeDefaultFolder
+   * @param $oldFolderPath
+   * @param $newFolderPath
+   * @param bool $removeOldFolder
    */
-  private function change_User_Schemata_Folder($oldSchemataFolderPath, $removeDefaultFolder = false)
+  private
+  function change_Folder($oldFolderPath, $newFolderPath, $removeOldFolder = false)
   {
     // creation of the new folder(s)
-    if (!is_dir($this->userSchemataFolderPath)) {
-      mkdir($this->userSchemataFolderPath, 0777, true);
+    if (!is_dir($newFolderPath)) {
+      mkdir($newFolderPath, 0777, true);
     }
     // if old folders exists
-    if (is_dir($oldSchemataFolderPath)) {
-      // move schemata in the nex folder(s)
-      $schemataJsonFiles = $this->toolbox->lsFiles($oldSchemataFolderPath, array('json'));
-      if ($removeDefaultFolder) {
-        foreach ($schemataJsonFiles as $schemataJsonFile) {
-          rename($schemataJsonFile, $this->userSchemataFolderPath . ToolBox::DS . basename($schemataJsonFile));
+    if (is_dir($oldFolderPath)) {
+      // move files in the next folder(s)
+      $files = $this->toolbox->lsFiles($oldFolderPath);
+      if ($removeOldFolder) {
+        foreach ($files as $file) {
+          rename($file, $newFolderPath . ToolBox::DS . basename($file));
         }
-        $this->toolbox->recursiveRmdir($oldSchemataFolderPath);
+        $this->toolbox->recursiveRmdir($oldFolderPath);
       } else {
-        foreach ($schemataJsonFiles as $schemataJsonFile) {
-          copy($schemataJsonFile, $this->userSchemataFolderPath . ToolBox::DS . basename($schemataJsonFile));
+        foreach ($files as $file) {
+          copy($file, $newFolderPath . ToolBox::DS . basename($file));
         }
       }
     }
@@ -340,26 +353,52 @@ class SchemataManager
   /**
    * @return String
    */
-  public function getUserSchemataFolderPath()
+  public
+  function getUserMetaTypeFolderPath()
+  {
+    return $this->userMetaTypeFolderPath;
+  }
+
+  /**
+   * @param String $userMetaTypeFolderPath
+   * @param bool $removeOldFolder
+   */
+  public
+  function setUserMetaTypeFolderPath($userMetaTypeFolderPath, $removeOldFolder = false)
+  {
+    $oldMetaTypeFolderPath = $this->userMetaTypeFolderPath;
+    $this->userMetaTypeFolderPath = $userMetaTypeFolderPath;
+    $this->change_Folder($oldMetaTypeFolderPath, $this->userMetaTypeFolderPath, $removeOldFolder);
+
+
+  }
+
+  /**
+   * @return String
+   */
+  public
+  function getUserSchemataFolderPath()
   {
     return $this->userSchemataFolderPath;
   }
 
   /**
    * @param $userSchemataFolderPath
-   * @param bool $removeDefaultOlder
+   * @param bool $removeOldFolder
    */
-  public function setUserSchemataFolderPath($userSchemataFolderPath, $removeDefaultOlder = false)
+  public
+  function setUserSchemataFolderPath($userSchemataFolderPath, $removeOldFolder = false)
   {
     $oldSchemataFolderPath = $this->userSchemataFolderPath;
     $this->userSchemataFolderPath = $userSchemataFolderPath;
-    $this->change_User_Schemata_Folder($oldSchemataFolderPath, $removeDefaultOlder);
+    $this->change_Folder($oldSchemataFolderPath, $this->userSchemataFolderPath, $removeOldFolder);
   }
 
   /**
    * @return array|Schema[]
    */
-  public function getSchemata()
+  public
+  function getSchemata()
   {
     return $this->schemata;
   }
@@ -369,7 +408,8 @@ class SchemataManager
    *
    * @return array
    */
-  public function getValidSchemata()
+  public
+  function getValidSchemata()
   {
     $validSchemata = array();
     foreach ($this->schemata as $schema) {
@@ -385,7 +425,8 @@ class SchemataManager
    *
    * @return array
    */
-  public function checkSchemataState()
+  public
+  function checkSchemataState()
   {
     $schemataState = array();
     foreach ($this->schemata as $schema) {

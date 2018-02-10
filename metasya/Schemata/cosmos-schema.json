@@ -9,11 +9,13 @@
           "shortcut": "dublinTitle"
         },
         "Creator": {
-          "shortcut": "dublinAuthor"
+          "shortcut": "dublinAuthor",
+          "description": "This is the author of the file",
+          "type": "Any"
         },
         "Description": {
           "shortcut": "dublinDesc",
-          "type": "MetaTypeAny"
+          "type": "Any"
         }
       }
     },

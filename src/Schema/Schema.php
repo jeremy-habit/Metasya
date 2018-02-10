@@ -164,7 +164,7 @@ class Schema
   }
 
   /**
-   * @return array|Metadata[]
+   * @return Metadata[]|array
    */
   public function getMetadata()
   {
@@ -237,7 +237,7 @@ class Schema
   }
 
   /**
-   * @return String[]
+   * @return array|String[]
    */
   public function getErrors()
   {

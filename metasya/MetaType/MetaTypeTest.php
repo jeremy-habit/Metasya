@@ -1,15 +1,11 @@
 <?php
 
-
-namespace MagicMonkey\Metasya\Schema\Metadata\Type;
-
 use MagicMonkey\Metasya\Schema\Metadata\Type\Interfaces\MetaTypeInterface;
 
 /**
- * Class MetaTypeAny
- * @package MagicMonkey\Metasya\Schema\Metadata\Type
+ * Class MetaTypeTest
  */
-class MetaTypeAny implements MetaTypeInterface
+class MetaTypeTest implements MetaTypeInterface
 {
 
   /**

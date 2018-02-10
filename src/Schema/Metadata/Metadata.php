@@ -2,7 +2,7 @@
 
 namespace MagicMonkey\Metasya\Schema\Metadata;
 
-use MagicMonkey\Metasya\Schema\Metadata\Type\Inheritance\AbstractMetaType;
+use MagicMonkey\Metasya\Schema\Metadata\Type\Interfaces\MetaTypeInterface;
 use MagicMonkey\Metasya\Schema\Metadata\Type\MetaTypeAny;
 
 
@@ -29,7 +29,12 @@ class Metadata
   private $namespace;
 
   /**
-   * @var AbstractMetaType $type
+   * @var string $description
+   */
+  private $description;
+
+  /**
+   * @var MetaTypeInterface $type
    */
   private $type;
 
@@ -39,13 +44,15 @@ class Metadata
    * @param $tagName
    * @param null $namespace
    * @param $shortcut
+   * @param null $description
    * @param $type
    */
-  public function __construct($tagName, $namespace, $shortcut, $type = null)
+  public function __construct($tagName, $namespace, $shortcut, $description = null, $type = null)
   {
     $this->tagName = $tagName;
     $this->namespace = $namespace;
     $this->shortcut = $shortcut;
+    $this->description = $description;
     $this->type = $type;
     if ($this->type == null) {
       $this->type = new MetaTypeAny();
@@ -85,7 +92,15 @@ class Metadata
   }
 
   /**
-   * @return AbstractMetaType
+   * @return string
+   */
+  public function getDescription()
+  {
+    return $this->description;
+  }
+
+  /**
+   * @return MetaTypeInterface|MetaTypeAny
    */
   public function getType()
   {
