@@ -1,6 +1,9 @@
 <?php
 
-namespace MagicMonkey\Metasya\Schema;
+namespace MagicMonkey\Metasya\Schema\Metadata;
+
+use MagicMonkey\Metasya\Schema\Metadata\Type\Inheritance\AbstractMetaType;
+use MagicMonkey\Metasya\Schema\Metadata\Type\MetaTypeAny;
 
 
 /**
@@ -26,17 +29,27 @@ class Metadata
   private $namespace;
 
   /**
+   * @var AbstractMetaType $type
+   */
+  private $type;
+
+  /**
    * Metadata constructor.
    *
    * @param $tagName
    * @param null $namespace
    * @param $shortcut
+   * @param $type
    */
-  public function __construct($tagName, $namespace, $shortcut)
+  public function __construct($tagName, $namespace, $shortcut, $type = null)
   {
     $this->tagName = $tagName;
     $this->namespace = $namespace;
     $this->shortcut = $shortcut;
+    $this->type = $type;
+    if ($this->type == null) {
+      $this->type = new MetaTypeAny();
+    }
   }
 
   /**
@@ -69,6 +82,14 @@ class Metadata
   public function getShortcut()
   {
     return $this->shortcut;
+  }
+
+  /**
+   * @return AbstractMetaType
+   */
+  public function getType()
+  {
+    return $this->type;
   }
 
 }

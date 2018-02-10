@@ -2,6 +2,7 @@
 
 namespace MagicMonkey\Metasya\Schema;
 
+use MagicMonkey\Metasya\Schema\Metadata\Metadata;
 use MagicMonkey\Metasya\ToolBox;
 
 /**
@@ -39,6 +40,7 @@ class SchemataManager
 
   /**
    * SchemataManager constructor.
+   * @throws \Exception
    */
   private function __construct()
   {
@@ -47,6 +49,19 @@ class SchemataManager
     $this->setUserSchemataFolderPath(self::USER_SCHEMATA_FOLDER_PATH);
     $this->synchronize_Default_Schemata();
     $this->synchronize_User_Schemata();
+  }
+
+  /**
+   * Method to reach the UNIQUE instance of the class.
+   *
+   * @return SchemataManager
+   */
+  public static function getInstance()
+  {
+    if (!(self::$instance instanceof self)) {
+      self::$instance = new self();
+    }
+    return self::$instance;
   }
 
   /**
@@ -143,24 +158,11 @@ class SchemataManager
     return $this->isMetadataShortcut($shortcut, true) ?: null;
   }
 
-
-  /**
-   * Method to reach the UNIQUE instance of the class.
-   *
-   * @return SchemataManager
-   */
-  public static function getInstance()
-  {
-    if (!(self::$instance instanceof self)) {
-      self::$instance = new self();
-    }
-    return self::$instance;
-  }
-
   /**
    * Allow to create schema object from json file
    *
    * @param $folderPath
+   * @throws \Exception
    */
   private function convert_Json_File_To_Schema_Object($folderPath)
   {
@@ -200,6 +202,7 @@ class SchemataManager
    * @param $schemaAsArray
    * @param $jsonFileBasename
    * @return Schema
+   * @throws \Exception
    */
   private function createSchemaFromArray($schemaAsArray, $jsonFileBasename)
   {
@@ -231,7 +234,14 @@ class SchemataManager
               if (!isset($content['shortcut'])) {
                 $newSchema->addError("The shortcut of the property " . $tagName . " of the metadata's group at the index " . $index . " is missing.");
               } else {
-                $newSchema->addMetadata(new Metadata($tagName, $metadataGroup['namespace'], $content['shortcut']));
+                $type = null;
+                if (isset($content['type'])) {
+                  $fqn = "MagicMonkey\Metasya\Schema\Metadata\Type\\" . $content['type'];
+                  if (class_exists($fqn)) {
+                    $type = new $fqn;
+                  }
+                }
+                $newSchema->addMetadata(new Metadata($tagName, $metadataGroup['namespace'], $content['shortcut'], $type));
               }
             }
           }
@@ -281,6 +291,7 @@ class SchemataManager
 
   /**
    * Create the default schemata object
+   * @throws \Exception
    */
   private function synchronize_Default_Schemata()
   {
@@ -289,6 +300,7 @@ class SchemataManager
 
   /**
    * Create the custom schemata object
+   * @throws \Exception
    */
   private function synchronize_User_Schemata()
   {

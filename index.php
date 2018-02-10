@@ -12,9 +12,10 @@ Autoloader::register();
 $metadataHelper = new MetadataHelper("data/images/photo1.jpg", false);
 $metadataHelper->setFilePath("data/images/paysage.jpg");
 
-$metadataHelper->write(["Title" => "Blue Birdjjhhhj", "rights" => "My song of the year"], false);
+var_dump($metadataHelper->getSchemataManager()->getSchemaFromShortcut("cosmos")->getMetadata());
 
-var_dump($metadataHelper->readByGroup());
+$meta = new MagicMonkey\Metasya\Schema\Metadata\Metadata("", "", "");
+var_dump($metadataHelper->write([$meta => "dd"]));
 
 /*var_dump($metadataHelper->readByGroup(["cosmos", "bonjour"],2));*/
 

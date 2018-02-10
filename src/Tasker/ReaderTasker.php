@@ -3,7 +3,7 @@
 namespace MagicMonkey\Metasya\Tasker;
 
 use MagicMonkey\Metasya\Inheritance\AbstractTasker;
-use MagicMonkey\Metasya\Schema\Metadata;
+use MagicMonkey\Metasya\Schema\Metadata\Metadata;
 use MagicMonkey\Metasya\Schema\Schema;
 
 /**

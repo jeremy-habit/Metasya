@@ -42,14 +42,12 @@ class WriterTasker extends AbstractTasker
    * @param $replace
    * @return string
    */
-  private
-  function stringify_Targeted_Metadata($targetedMetadata, $replace)
+  private function stringify_Targeted_Metadata($targetedMetadata, $replace)
   {
     $stringifiedTargetedMetadata = "";
     $prefix = "-";
     $targetedMetadataLength = count($targetedMetadata);
     $i = 0;
-
 
     /* ##### VERSION 1 ##### */
 
@@ -75,13 +73,17 @@ class WriterTasker extends AbstractTasker
 
     /* ##### VERSION 2 ##### */
     foreach ($targetedMetadata as $metadataTag => $metadataValue) {
+      $acceptedValue = true;
       $eventualMetadata = $this->schemataManager->getMetadataFromShortcut($metadataTag);
       if ($eventualMetadata != null) {
+        $acceptedValue = $eventualMetadata->getType()->isAccepted($metadataValue);
         $metadataTag = $eventualMetadata->__toString();
       }
-      $stringifiedTargetedMetadata .= $prefix . $metadataTag . "=\"" . $metadataValue . "\"" . (!$replace ? " " . $prefix . "$metadataTag" . $prefix . "=" : null);
-      if ($i++ !== $targetedMetadataLength) {
-        $stringifiedTargetedMetadata .= " ";
+      if ($acceptedValue) {
+        $stringifiedTargetedMetadata .= $prefix . $metadataTag . "=\"" . $metadataValue . "\"" . (!$replace ? " " . $prefix . "$metadataTag" . $prefix . "=" : null);
+        if ($i++ !== $targetedMetadataLength) {
+          $stringifiedTargetedMetadata .= " ";
+        }
       }
     }
 
@@ -97,8 +99,7 @@ class WriterTasker extends AbstractTasker
    * @param $overwrite
    * @return null|string
    */
-  private
-  function make_Stringify_Cmd($targetedMetadata, $replace, $overwrite)
+  private function make_Stringify_Cmd($targetedMetadata, $replace, $overwrite)
   {
     $overwrite = ($overwrite) ? "-overwrite_original" : null;
     /* if (!$replace) {
@@ -122,8 +123,7 @@ class WriterTasker extends AbstractTasker
    * @param bool $overwrite
    * @return array|bool|null|string
    */
-  public
-  function write($targetedMetadata = null, $replace = true, $overwrite = true)
+  public function write($targetedMetadata = null, $replace = true, $overwrite = true)
   {
     if (!empty($targetedMetadata) && is_array($targetedMetadata)) {
       $stringifiedCmd = $this->make_Stringify_Cmd($targetedMetadata, $replace, $overwrite);

@@ -12,7 +12,8 @@
           "shortcut": "dublinAuthor"
         },
         "Description": {
-          "shortcut": "dublinDesc"
+          "shortcut": "dublinDesc",
+          "type": "MetaTypeAny"
         }
       }
     },

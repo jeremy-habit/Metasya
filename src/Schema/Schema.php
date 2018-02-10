@@ -2,6 +2,8 @@
 
 namespace MagicMonkey\Metasya\Schema;
 
+use MagicMonkey\Metasya\Schema\Metadata\Metadata;
+
 
 /**
  * Class Schema
