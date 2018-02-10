@@ -74,13 +74,6 @@ class MetadataHelper
   /* ### PRIVATE FUNCTIONS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
-  /**
-   * Set the exiftool path according the value of $useProvidedExiftool
-   */
-  public function set_Exiftool_Path()
-  {
-    $this->exiftoolPath = ($this->useProvidedExiftool) ? $this->generate_Full_Exiftool_Path() : "";
-  }
 
   /**
    * Concatenate the EXIFTOOL_PATH const with the result of the function determine_OS in order generate the path to exiftool exe
@@ -110,6 +103,15 @@ class MetadataHelper
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### PUBLIC FUNCTIONS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+
+
+  /**
+   * Set the exiftool path according the value of $useProvidedExiftool
+   */
+  public function set_Exiftool_Path()
+  {
+    $this->exiftoolPath = ($this->useProvidedExiftool) ? $this->generate_Full_Exiftool_Path() : "";
+  }
 
   /* -- Version Start -- */
 
@@ -159,20 +161,19 @@ class MetadataHelper
   /* -- Version End -- */
 
   /**
-   * Allow the user to execute any commands with the used exiftool version
-   * @param $stringifyCmd
+   * Allows the user to execute any commands with the used exiftool version
+   * @param $stringifiedCmd
    * @return string
    */
-  public function execute($stringifyCmd)
+  public function execute($stringifiedCmd)
   {
     try {
-      $cmd = ($this->useProvidedExiftool) ? $this->generate_Full_Exiftool_Path() . "exiftool " . $stringifyCmd : "exiftool " . $stringifyCmd . " 2>&1";
+      $cmd = ($this->useProvidedExiftool) ? $this->generate_Full_Exiftool_Path() . "exiftool " . $stringifiedCmd : "exiftool " . $stringifiedCmd . " 2>&1";
       return shell_exec($cmd);
     } catch (Exception $exception) {
       return $exception->getMessage();
     }
   }
-
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### TASKERS SHORTCUTS FUNCTIONS ### */
@@ -334,15 +335,6 @@ class MetadataHelper
   {
     $this->useProvidedExiftool = $useProvidedExiftool;
     $this->set_Exiftool_Path();
-  }
-
-  /**
-   * @param mixed $schemataFolderPath
-   */
-  public function updateSchemataFolderPath($schemataFolderPath)
-  {
-    $oldSchemataFolderPath = $this->schemataManager->getUserSchemataFolderPath();
-    $this->schemataManager->setUserSchemataFolderPath($schemataFolderPath, $oldSchemataFolderPath);
   }
 
   /**

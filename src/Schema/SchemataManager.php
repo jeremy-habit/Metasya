@@ -18,7 +18,7 @@ class SchemataManager
   /**
    * $instance is private in order to implement the singleton pattern
    *
-   * @var static $instance
+   * @var SchemataManager $instance
    */
   private static $instance;
 

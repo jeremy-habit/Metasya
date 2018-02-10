@@ -39,6 +39,9 @@ class Metadata
     $this->shortcut = $shortcut;
   }
 
+  /**
+   * @return string
+   */
   public function __toString()
   {
     return $this->namespace . ":" . $this->tagName;
