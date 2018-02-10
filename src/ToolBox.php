@@ -179,4 +179,17 @@ class ToolBox
     return $newArray;
   }
 
+  /**
+   * Returns the name of a file from its path.
+   *
+   * @param $filePath
+   * @return mixed
+   */
+  public function getFileNameWithoutExtension($filePath)
+  {
+    $fileName = basename($filePath);
+    $fileNameWithoutExtension = pathinfo($fileName, PATHINFO_FILENAME);
+    return $fileNameWithoutExtension;
+  }
+
 }

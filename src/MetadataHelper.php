@@ -19,6 +19,7 @@ class MetadataHelper
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
   const EXIFTOOL_PATH = "vendor" . ToolBox::DS . "magicmonkey" . ToolBox::DS . "metasya" . ToolBox::DS . "exiftool" . ToolBox::DS;
+  const XMP_SIDECAR_FOLDER_PATH = "metasya" . ToolBox::DS . "XmpSidecar";
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### ATTRIBUTES & CONSTRUCTORS ### */
@@ -68,12 +69,22 @@ class MetadataHelper
     $this->filePath = $filePath;
     $this->useProvidedExiftool = $useProvidedExiftool;
     $this->set_Exiftool_Path();
+    $this->createSidecarFolder();
   }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### PRIVATE FUNCTIONS ### */
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
+  /**
+   * Allows to create the folder for xmp sidecar files.
+   */
+  private function createSidecarFolder()
+  {
+    if (!is_dir(self::XMP_SIDECAR_FOLDER_PATH)) {
+      mkdir(self::XMP_SIDECAR_FOLDER_PATH, 0777, true);
+    }
+  }
 
   /**
    * Concatenate the EXIFTOOL_PATH const with the result of the function determine_OS in order generate the path to exiftool exe
@@ -168,7 +179,7 @@ class MetadataHelper
   public function execute($stringifiedCmd)
   {
     try {
-      $cmd = ($this->useProvidedExiftool) ? $this->generate_Full_Exiftool_Path() . "exiftool " . $stringifiedCmd : "exiftool " . $stringifiedCmd . " 2>&1";
+      $cmd = (($this->useProvidedExiftool) ? $this->generate_Full_Exiftool_Path() . "exiftool " . $stringifiedCmd : "exiftool " . $stringifiedCmd) . " 2>&1";
       return shell_exec($cmd);
     } catch (Exception $exception) {
       return $exception->getMessage();
@@ -176,8 +187,20 @@ class MetadataHelper
   }
 
 
-  public function generateSideCar(){
-
+  public function generateXMPSideCar($outFileName = null)
+  {
+    try {
+      if ($outFileName == null) {
+        $outFileName = "\\" . $this->toolBox->getFileNameWithoutExtension($this->filePath);
+      }
+      $stringifiedCmd = "-overwrite_original -tagsfromfile " . $this->filePath . " " . self::XMP_SIDECAR_FOLDER_PATH . $outFileName . ".xmp";
+      $cmd = (($this->useProvidedExiftool) ? $this->generate_Full_Exiftool_Path() . "exiftool " . $stringifiedCmd : "exiftool " . $stringifiedCmd) . " 2>&1";
+      var_dump($cmd);
+      die();
+      return shell_exec($cmd);
+    } catch (Exception $exception) {
+      return $exception->getMessage();
+    }
   }
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */

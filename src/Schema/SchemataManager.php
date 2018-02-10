@@ -215,7 +215,7 @@ class SchemataManager
   {
     $newSchema = new Schema();
     $newSchema->setSchemaAsArray($schemaAsArray);
-    $newSchema->setDescription($schemaAsArray['description']);
+    $newSchema->setDescription(isset($schemaAsArray['description']) ? $schemaAsArray['description'] : "");
     $newSchema->setFileName($jsonFileBasename);
     // shortcut required
     if (!isset($schemaAsArray['shortcut'])) {
