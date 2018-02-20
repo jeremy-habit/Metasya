@@ -10,6 +10,9 @@ Autoloader::register();
 
 
 $metadataHelper = new MetadataHelper("data/images/photo1.jpg", false);
-$metadataHelper->setFilePath("data/images/photo1.jpg");
+
+var_dump($metadataHelper->getSchemataManager()->getSchemaFromShortcut("XMP-DC"));
+/*var_dump($metadataHelper->getSchemataManager()->get)*/
 
 var_dump($metadataHelper->read(['XMP-DC']));
+var_dump($metadataHelper->read());

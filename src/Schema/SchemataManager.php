@@ -12,7 +12,7 @@ use MagicMonkey\Metasya\ToolBox;
 class SchemataManager
 {
 
-  const DEFAULT_SCHEMATA_FOLDER_PATH = "vendor" . ToolBox::DS . "magicmonkey" . ToolBox::DS . "metasya" . ToolBox::DS . "data" . ToolBox::DS . "defaultSchemata";
+  const DEFAULT_SCHEMATA_FOLDER_PATH = "vendor" . ToolBox::DS . "magicmonkey" . ToolBox::DS . "metasya" . ToolBox::DS . "src" . ToolBox::DS . "Schema" . ToolBox::DS . "defaultSchemata";
   /*const DEFAULT_SCHEMATA_FOLDER_PATH = "src" . ToolBox::DS . "Schema" . ToolBox::DS . "defaultSchemata";*/
   const USER_SCHEMATA_FOLDER_PATH = "metasya" . ToolBox::DS . "Schemata";
   const USER_META_TYPE_FOLDER_PATH = "metasya" . ToolBox::DS . "MetaType";
@@ -425,8 +425,7 @@ class SchemataManager
    *
    * @return array
    */
-  public
-  function checkSchemataState()
+  public function checkSchemataState()
   {
     $schemataState = array();
     foreach ($this->schemata as $schema) {
