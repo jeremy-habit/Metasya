@@ -162,9 +162,21 @@ var_dump($metadataHelper->execute("-a -u -g1 image.jpg"));
 
 
 
-#### Generate sidecar xmp
+#### Generate Sidecar file
+
+**Sidecar files**, also known as **buddy files** or **connected files**, are computer files that store data (often metadata which is not supported by the format of a source file.
+
+```php
+$metadataHelper->generateXMPSideCar();
+```
 
 
+
+Note that by default the output path of the generated sidecar file is the folder which is called "**metasya/Sidecar**" and it's created at the root of your project. However you can specify an other path like this :
+
+```php
+$metadataHelper->generateXMPSideCar("an/other/path");
+```
 
 
 
@@ -720,7 +732,7 @@ $metadataHelper->getSchemataManager()->getValidSchemata();
 
 ##### The path of the user's schemata's folder
 
-By default, the user's schemata's folder is called "**metasyaSchemata**" and it's created at the root of your project. However, you can change it like following :
+By default, the user's schemata's folder is called "**metasya/Schemata**" and it's created at the root of your project. However, you can change it like following :
 
 ```php
 $metadataHelper->getSchemataManager()->setUserSchemataFolderPath("my/new/path");

@@ -19,7 +19,7 @@ class MetadataHelper
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
 
   const EXIFTOOL_PATH = "vendor" . ToolBox::DS . "magicmonkey" . ToolBox::DS . "metasya" . ToolBox::DS . "exiftool" . ToolBox::DS;
-  const XMP_SIDECAR_FOLDER_PATH = "metasya" . ToolBox::DS . "XmpSidecar";
+  const XMP_SIDECAR_FOLDER_PATH = "metasya" . ToolBox::DS . "Sidecar";
 
   /* :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
   /* ### ATTRIBUTES & CONSTRUCTORS ### */
@@ -195,8 +195,8 @@ class MetadataHelper
       }
       $stringifiedCmd = "-overwrite_original -tagsfromfile " . $this->filePath . " " . self::XMP_SIDECAR_FOLDER_PATH . $outFileName . ".xmp";
       $cmd = (($this->useProvidedExiftool) ? $this->generate_Full_Exiftool_Path() . "exiftool " . $stringifiedCmd : "exiftool " . $stringifiedCmd) . " 2>&1";
-      var_dump($cmd);
-      die();
+    /*  var_dump($cmd);
+      die();*/
       return shell_exec($cmd);
     } catch (Exception $exception) {
       return $exception->getMessage();

@@ -1,11 +1,15 @@
 <?php
 
+
+namespace MagicMonkey\Metasya\Schema\Metadata\Type;
+
 use MagicMonkey\Metasya\Schema\Metadata\Type\Interfaces\MetaTypeInterface;
 
 /**
- * Class MetaTypeTest
+ * Class MetaTypeString
+ * @package MagicMonkey\Metasya\Schema\Metadata\Type
  */
-class MetaTypeTest implements MetaTypeInterface
+class MetaTypeString implements MetaTypeInterface
 {
 
   /**
@@ -16,6 +20,6 @@ class MetaTypeTest implements MetaTypeInterface
    */
   public function isAccepted($value)
   {
-    return true;
+    return is_string($value);
   }
 }
