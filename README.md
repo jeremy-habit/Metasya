@@ -369,6 +369,19 @@ The WriterTasker allows to add metadata to a file or to edit file's metadata. Yo
      $metadataHelper->write(["XMP-dc:Title" => "First Title"], false);
      ```
 
+   * Write Keywords as an array appending the values :
+
+     ```php
+     $metadataHelper->writer()->write(["Keywords" => ["One", "Two", "Three"]], false);
+
+     /* or the short way */
+
+     $metadataHelper->writer()->write(["Keywords" => ["One", "Two", "Three"]], false);
+
+     /* or when replacing the values */
+
+     $metadataHelper->writer()->write(["Keywords" => ["One", "Two", "Three"]], true);
+     ```
 
 
 

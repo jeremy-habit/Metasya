@@ -80,9 +80,22 @@ class WriterTasker extends AbstractTasker
         $metadataTag = $eventualMetadata->__toString();
       }
       if ($acceptedValue) {
-        $stringifiedTargetedMetadata .= $prefix . $metadataTag . "=\"" . $metadataValue . "\"" . (!$replace ? " " . $prefix . "$metadataTag" . $prefix . "=" : null);
-        if ($i++ !== $targetedMetadataLength) {
-          $stringifiedTargetedMetadata .= " ";
+        if (is_array($metadataValue))
+        {
+          foreach($metadataValue as $metadataArrayValue)
+          {
+            $stringifiedTargetedMetadata .= $prefix . $metadataTag . (!$replace ? '+' : null ) . "=\"" . $metadataArrayValue . "\" ";
+            if ($i++ !== $targetedMetadataLength) {
+              $stringifiedTargetedMetadata .= " ";
+            }
+	  }
+        }
+        else
+        {
+          $stringifiedTargetedMetadata .= $prefix . $metadataTag . "=\"" . $metadataValue . "\"" . (!$replace ? " " . $prefix . "$metadataTag" . $prefix . "=" : null);
+          if ($i++ !== $targetedMetadataLength) {
+            $stringifiedTargetedMetadata .= " ";
+          }
         }
       }
     }
